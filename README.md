@@ -17,7 +17,7 @@ VGMStream and FFMpeg need to be installed in the included folders in this reposi
 
 ## Usage
 
-1. Copy the desired "soundbank" and "wem" files (in the "d" subdirectory) and "toc" into the root folder.
+1. Copy or move the desired "soundbank" and "wem" files (in the "d" subdirectory of the game) and "toc" into the root folder.
 
 > Note that the SFX and music spans across multiple wem files: "wem_0", "wem_00", and "wem_1".
 
