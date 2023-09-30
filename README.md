@@ -17,6 +17,10 @@ VGMStream and FFMpeg need to be installed in the included folders in this reposi
 
 ## Usage
 
-Simply run "python3 runme.py" in a commandline tool.
+1. Copy the desired "soundbank" and "wem" files (in the "d" subdirectory) and "toc" into the root folder.
+
+> Note that the SFX and music spans across multiple wem files: "wem_0", "wem_00", and "wem_1".
+
+2. Simply run "python3 runme.py" in a commandline tool.
 
 The scripts will ask for a language suffix (leave blank if you want SFX and music. Only English and Brazilian Portuguese are currently supported), as well as a keyword or phrase to filter by if desired (recommended since the full archives are large and this will take time to extract entirely). The console will start by outputting all of the banks within the soundbank files if it helps you determine the workable filters.
