@@ -3,10 +3,10 @@ import shutil
 import subprocess
 import re
 
-def sort(in_string):
+def sort(in_string, validType):
     in_file_sb = open("tmp", "wb")
     out_file_txt = open("tmp2", "w")
-    if in_string == "us" or in_string == "br":
+    if validType == True:
         in_file_sb.close()
         out_file_txt.close()
         os.remove("tmp")
@@ -135,7 +135,7 @@ def sort(in_string):
     nameCount = 0
 
     bankPath = "banks"
-    if in_string == "us" or in_string == "br":
+    if validType == True:
         bankPath = "banks_" + in_string
 
     print(str(len(sbNames)) + " subbanks")
@@ -198,7 +198,7 @@ def sort(in_string):
                     #Dupes = True
                     
     in_file_sb.close()
-    if in_string == "us" or in_string == "br":
+    if validType == True:
         os.remove("list." + in_string)
     else:
         os.remove("list")

@@ -1,9 +1,9 @@
 import os
 import shutil
 
-def split(in_string):
+def split(in_string, validType):
     in_file_sb = open("tmp", "wb")
-    if in_string == "us" or in_string == "br":
+    if validType == True:
         in_file_sb.close()
         in_file_sb = open("soundbank." + in_string, "rb")
     else:
@@ -115,7 +115,7 @@ def split(in_string):
         wholeBank = in_file_sb.read(sbSizes[i] - bankSearch)
 
         out_bank = open("2", "w")
-        if in_string == "us" or in_string == "br":
+        if validType == True:
             out_bank.close()
             out_bank = open("banks_" + in_string + os.path.sep + sbNames[i] + ".bnk", "wb")
         else:

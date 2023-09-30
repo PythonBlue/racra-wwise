@@ -2,10 +2,10 @@ import os
 import shutil
 import subprocess
 import re
-def names(in_string):
+def names(in_string, validType):
     in_file_sb = open("tmp", "wb")
     bankPath = "banks"
-    if in_string == "us" or in_string == "br":
+    if validType == True:
         in_file_sb.close()
         in_file_sb = open("soundbank." + in_string, "rb")
         bankPath = "banks_" + in_string

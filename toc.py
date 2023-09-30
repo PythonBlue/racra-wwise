@@ -9,8 +9,7 @@ def natural_sort(l):
     alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
     return sorted(l, key=alphanum_key)
 
-def toc(in_string):
-    validType = in_string == "us" or in_string == "br"
+def toc(in_string, validType):
     bankPath = "banks"
     soundPath = "sound"
     flacPath = "flac"
@@ -175,8 +174,24 @@ def toc(in_string):
             archiveName.append("wem_1")
         elif i == int.from_bytes(b'\x6f', "little") :
             archiveName.append("wem_us")
+        elif i == int.from_bytes(b'\x77', "little") :
+            archiveName.append("wem_fr")
+        elif i == int.from_bytes(b'\x79', "little") :
+            archiveName.append("wem_de")
+        elif i == int.from_bytes(b'\x7b', "little") :
+            archiveName.append("wem_it")
+        elif i == int.from_bytes(b'\x7d', "little") :
+            archiveName.append("wem_jp")
+        elif i == int.from_bytes(b'\x81', "little") :
+            archiveName.append("wem_pl")
+        elif i == int.from_bytes(b'\x85', "little") :
+            archiveName.append("wem_ru")
+        elif i == int.from_bytes(b'\x87', "little") :
+            archiveName.append("wem_es")
         elif i == int.from_bytes(b'\x8b', "little") :
             archiveName.append("wem_br")
+        elif i == int.from_bytes(b'\x8f', "little") :
+            archiveName.append("wem_la")
         elif i == int.from_bytes(b'\x92', "little") :
             archiveName.append("wem_00")
         else:
@@ -195,9 +210,33 @@ def toc(in_string):
         elif fID == b'\x6f':
             fSelector = 1
             fName = "wem.us"
+        elif fID == b'\x77':
+            fSelector = 5
+            fName = "wem.fr"
+        elif fID == b'\x79':
+            fSelector = 6
+            fName = "wem.de"
+        elif fID == b'\x7b':
+            fSelector = 7
+            fName = "wem.it"
+        elif fID == b'\x7d':
+            fSelector = 8
+            fName = "wem.jp"
+        elif fID == b'\x81':
+            fSelector = 10
+            fName = "wem.pl"
+        elif fID == b'\x85':
+            fSelector = 12
+            fName = "wem.ru"
+        elif fID == b'\x87':
+            fSelector = 13
+            fName = "wem.es"
         elif fID == b'\x8b':
             fSelector = 15
             fName = "wem.br"
+        elif fID == b'\x8f':
+            fSelector = 17
+            fName = "wem.la"
         elif fID == b'\x92':
             fSelector = 0
             fName = "wem_00"
@@ -225,8 +264,24 @@ def toc(in_string):
     theCount = 0
     if in_string == "us":
         theCount = 1
+    if in_string == "fr":
+        theCount = 5
+    if in_string == "de":
+        theCount = 6
+    if in_string == "it":
+        theCount = 7
+    if in_string == "jp":
+        theCount = 8
+    if in_string == "pl":
+        theCount = 10
+    if in_string == "ru":
+        theCount = 12
+    if in_string == "es":
+        theCount = 13
     if in_string == "br":
         theCount = 15
+    if in_string == "la":
+        theCount = 17
     for i in range(len(fileNameTables[theCount])):
         in_file_wem = open(fileNameTables[theCount][i], "rb")
         out_file_wem = open(bankPath + os.path.sep + "wem" + os.path.sep + str(IDtables[theCount][i]) + ".wem", "wb")
