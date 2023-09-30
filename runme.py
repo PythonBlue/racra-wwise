@@ -16,12 +16,15 @@ split.split(in_string)
     
 names.names(in_string)
     
-for folder in sorted(os.listdir(bankPath + os.sep + "wwnames" + os.sep)):
+for folder in sorted(os.listdir(bankPath + os.path.sep + "wwnames" + os.path.sep)):
     if folder.endswith(".txt"):
         if in_skip != "" and in_skip not in folder.split(".txt")[0]:
             continue
-        os.system("python3 wwiser.pyz -g -go txtp" + os.sep + folder.split(".")[0] + " -gw ../../wem -gbo -nl " + bankPath + os.sep + "wwnames" + os.sep + folder + " -l " + bankPath + os.sep + folder.split(".")[0] + ".bnk")
-
+        try:
+            os.system('python3 wwiser.pyz -g -go "txtp' + os.path.sep + folder.split(".")[0] + '" -gw "..' + os.path.sep + '..' + os.path.sep + 'wem" -gbo -nl "' + bankPath + os.path.sep + 'wwnames' + os.path.sep + folder + '" -l "' + bankPath + os.path.sep + folder.split(".")[0] + '.bnk"')
+        except:
+            print("WWiser and/or wwnames.db3 not installed!")
+            shutil.rmtree(bankPath)
 sort.sort(in_string)
 
 toc.toc(in_string)

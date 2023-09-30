@@ -145,11 +145,11 @@ def sort(in_string):
     checked = []
 
     for j in range(len(sbNames)):
-        if sbNames[j] not in os.listdir(bankPath + os.sep + "txtp"):
+        if sbNames[j] not in os.listdir(bankPath + os.path.sep + "txtp"):
             continue
         for i in range(len(sbNamesinBank[j])):
             #print(sbNamesinBank[j][i])
-            for file in sorted(os.listdir(bankPath + os.sep + "txtp" + os.sep + sbNames[j])):
+            for file in sorted(os.listdir(bankPath + os.path.sep + "txtp" + os.path.sep + sbNames[j])):
                 if not file.endswith(".txtp"):
                     continue
                 fileName = file.split(" ")[0].split("~")[0].split(" (")[0].split("~")[0]
@@ -157,39 +157,43 @@ def sort(in_string):
                     fileName = sbNamesinBank[j][i]
                     #Dupes = False
                     print("Extracting " + sbNamesinBank[j][i])
-                    bankCheck = open(bankPath + os.sep + "txtp" + os.sep + sbNames[j] + os.sep + file, "r")
+                    bankCheck = open(bankPath + os.path.sep + "txtp" + os.path.sep + sbNames[j] + os.path.sep + file, "r")
                     bankCheckRead = bankCheck.read()
-                    bankEmbedSearch = re.search("wem" + os.sep + ".+[.]bnk", bankCheckRead)
+                    bankEmbedSearch = re.search("wem/.+[.]bnk", bankCheckRead)
                     bankCheck.close()
-                    if not os.path.exists(bankPath + os.sep + "txtp_sorted" + os.sep + sbNames[j]):
-                        os.makedirs(bankPath + os.sep + "txtp_sorted" + os.sep + str(sbNames[j]))
-                    fileOpen = open(bankPath + os.sep + "txtp" + os.sep + sbNames[j] + os.sep + file, "r")
+                    if not os.path.exists(bankPath + os.path.sep + "txtp_sorted" + os.path.sep + sbNames[j]):
+                        os.makedirs(bankPath + os.path.sep + "txtp_sorted" + os.path.sep + str(sbNames[j]))
+                    fileOpen = open(bankPath + os.path.sep + "txtp" + os.path.sep + sbNames[j] + os.path.sep + file, "r")
                     fileRead = fileOpen.read()
                     fileOpen.close()
-                    bankDeps = re.findall('[.][.]' + os.sep + '[.][.]' + os.sep + '+wem' + os.sep + '.+[.]wem', fileRead)
+                    bankDeps = re.findall('[.][.]/[.][.]/+wem/.+[.]wem', fileRead)
                     if len(bankDeps) > 1:
                         for rcount in range(len(bankDeps)):
                             if ".bnk" in bankDeps[rcount]:
                                 bankDeps[rcount] = bankDeps[rcount].split(" ")[0] + " " + bankDeps[rcount].split(" ")[1]
+                            if os.system == 'win32' or os.system == 'win64':
+                                bankDeps[rcount] = bankDeps[rcount].replace("/", "\\")
                             if bankDeps[rcount] in checked:
                                 continue
                             offset = 1
-                            if os.path.exists(bankPath + os.sep + 'txtp_sorted' + os.sep + sbNames[j] + os.sep + fileName + '_' + str(rcount + offset) + '.txtp'):
-                                while os.path.exists(bankPath + os.sep + 'txtp_sorted' + os.sep + sbNames[j] + os.sep + fileName + '_' + str(rcount + offset) + '.txtp'):
+                            if os.path.exists(bankPath + os.path.sep + 'txtp_sorted' + os.path.sep + sbNames[j] + os.path.sep + fileName + '_' + str(rcount + offset) + '.txtp'):
+                                while os.path.exists(bankPath + os.path.sep + 'txtp_sorted' + os.path.sep + sbNames[j] + os.path.sep + fileName + '_' + str(rcount + offset) + '.txtp'):
                                     offset += 1
-                            os.system('echo "' + bankDeps[rcount] + '" > ' + bankPath + os.sep + 'txtp_sorted' + os.sep + sbNames[j] + os.sep + fileName + '_' + str(rcount + offset) + '.txtp')
+                            os.system('echo ' + bankDeps[rcount] + ' > "' + bankPath + os.path.sep + 'txtp_sorted' + os.path.sep + sbNames[j] + os.path.sep + fileName + '_' + str(rcount + offset) + '.txtp"')
                             checked.append(bankDeps[rcount])
                     elif len(bankDeps) == 1:
                         if ".bnk" in bankDeps[0]:
                             bankDeps[0] = bankDeps[0].split(" ")[0] + " " + bankDeps[0].split(" ")[1]
+                        if os.system == 'win32' or os.system == 'win64':
+                            bankDeps[rcount] = bankDeps[rcount].replace("/", "\\")
                         if bankDeps[0] in checked:
                             continue
                         offset = 1
-                        if os.path.exists(bankPath + os.sep + 'txtp_sorted' + os.sep + sbNames[j] + os.sep + fileName + '_' + str(offset) + '.txtp'):
-                            while os.path.exists(bankPath + os.sep + 'txtp_sorted' + os.sep + sbNames[j] + os.sep + fileName + '_' + str(offset) + '.txtp'):
+                        if os.path.exists(bankPath + os.path.sep + 'txtp_sorted' + os.path.sep + sbNames[j] + os.path.sep + fileName + '_' + str(offset) + '.txtp'):
+                            while os.path.exists(bankPath + os.path.sep + 'txtp_sorted' + os.path.sep + sbNames[j] + os.path.sep + fileName + '_' + str(offset) + '.txtp'):
                                 offset += 1
                             fileName += "_" + str(offset)
-                        os.system('echo "' + bankDeps[0] + '" > ' + bankPath + os.sep + 'txtp_sorted' + os.sep + sbNames[j] + os.sep + fileName + '.txtp')
+                        os.system('echo ' + bankDeps[0] + ' > "' + bankPath + os.path.sep + 'txtp_sorted' + os.path.sep + sbNames[j] + os.path.sep + fileName + '.txtp"')
                         checked.append(bankDeps[0])
                     #Dupes = True
                     

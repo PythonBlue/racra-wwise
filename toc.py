@@ -2,6 +2,7 @@ import os
 import shutil
 import subprocess
 import re
+import shutil
 
 def natural_sort(l): 
     convert = lambda text: int(text) if text.isdigit() else text.lower()
@@ -219,8 +220,8 @@ def toc(in_string):
         checked.append([])
 
     #print(IDtables[1][0])
-    if not os.path.exists(bankPath + os.sep + "wem"):
-        os.makedirs(bankPath + os.sep + "wem")
+    if not os.path.exists(bankPath + os.path.sep + "wem"):
+        os.makedirs(bankPath + os.path.sep + "wem")
     theCount = 0
     if in_string == "us":
         theCount = 1
@@ -228,7 +229,7 @@ def toc(in_string):
         theCount = 15
     for i in range(len(fileNameTables[theCount])):
         in_file_wem = open(fileNameTables[theCount][i], "rb")
-        out_file_wem = open(bankPath + os.sep + "wem" + os.sep + str(IDtables[theCount][i]) + ".wem", "wb")
+        out_file_wem = open(bankPath + os.path.sep + "wem" + os.path.sep + str(IDtables[theCount][i]) + ".wem", "wb")
         in_file_wem.seek(Offtables[theCount][i])
         out_file_wem.write(in_file_wem.read(Sztables[theCount][i]))
         in_file_wem.close()
@@ -236,20 +237,20 @@ def toc(in_string):
     in_file_sb.close()
     os.remove("tmp")
 
-    if not os.path.exists(bankPath + os.sep + "wem"):
-        os.makedirs(bankPath + os.sep + "wem")
+    if not os.path.exists(bankPath + os.path.sep + "wem"):
+        os.makedirs(bankPath + os.path.sep + "wem")
 
     for file in sorted(os.listdir(bankPath)):
         if not file.endswith(".bnk"):
             continue
-        shutil.copy(bankPath + os.sep + file, bankPath + os.sep + "wem" + os.sep + file)
+        shutil.copy(bankPath + os.path.sep + file, bankPath + os.path.sep + "wem" + os.path.sep + file)
 
-    for folder in sorted(os.listdir(bankPath + os.sep + "txtp_sorted")):
+    for folder in sorted(os.listdir(bankPath + os.path.sep + "txtp_sorted")):
         bankChecked = []
-        if os.path.isdir(bankPath + os.sep + "txtp_sorted" + os.sep + folder):
-            if not os.path.exists(flacPath + os.sep + folder):
-                os.makedirs(flacPath + os.sep + folder)
-            for file in sorted(os.listdir(bankPath + os.sep + "txtp_sorted" + os.sep + folder)):
+        if os.path.isdir(bankPath + os.path.sep + "txtp_sorted" + os.path.sep + folder):
+            if not os.path.exists(flacPath + os.path.sep + folder):
+                os.makedirs(flacPath + os.path.sep + folder)
+            for file in sorted(os.listdir(bankPath + os.path.sep + "txtp_sorted" + os.path.sep + folder)):
                 fileBase = file.split(".")[0].split("~")[0]
                 print("Converting " + fileBase)
                 fileProc = file.replace(" ","\ ")
@@ -258,11 +259,11 @@ def toc(in_string):
                 fileProc = fileProc.replace("[","\[").replace("]","\]")
                 fileBaseProc = fileProc.split(".")[0].split("~")[0]
                 
-                if not os.path.exists(flacPath + os.sep + folder + os.sep + fileBase):
-                    os.makedirs(flacPath + os.sep + folder + os.sep + fileBase)
+                if not os.path.exists(flacPath + os.path.sep + folder + os.path.sep + fileBase):
+                    os.makedirs(flacPath + os.path.sep + folder + os.path.sep + fileBase)
                 if not file.endswith(".txtp"):
                     continue
-                fileOpen = open(bankPath + os.sep + "txtp_sorted" + os.sep + folder + os.sep + file, "r")
+                fileOpen = open(bankPath + os.path.sep + "txtp_sorted" + os.path.sep + folder + os.path.sep + file, "r")
                 fileRead = fileOpen.read()
                 fileOpen.close()
                 if re.findall('\d+[.]wem', fileRead) != None:
@@ -282,32 +283,50 @@ def toc(in_string):
                                 wemIndex = fileIndex[fileID[fSelect][IDtables[fSelect].index(IDCheck)]].index(offCheck)
                                 if wemIndex in checked[fileID[fSelect][IDtables[fSelect].index(IDCheck)]]:
                                     continue
-                                os.chdir(bankPath + os.sep + "txtp_sorted" + os.sep + folder)
-                                os.system("vgmstream-cli -D 2 -i -o " + ".." + os.sep + ".." + os.sep + ".." + os.sep + flacPath + os.sep + folder + os.sep + fileBaseProc + os.sep + sourceWem + "_" + str(wemIndex) + ".wav " + fileProc + " > .." + os.sep + ".." + os.sep + ".." + os.sep + "vgmstream.log")
-                                os.chdir(".." + os.sep + ".." + os.sep + "..")
+                                os.chdir(bankPath + os.path.sep + "txtp_sorted" + os.path.sep + folder)
+                                if os.path.exists('/usr/local/bin/vgmstream-cli'):
+                                    os.system('vgmstream-cli -D 2 -i -o "' + '..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + sourceWem + '_' + str(wemIndex) + '.wav" "' + fileProc + '" > "..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream.log"')
+                                elif os.path.exists('..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream' + os.path.sep + 'vgmstream-cli.exe'):
+                                    os.system('..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream' + os.path.sep + 'vgmstream-cli.exe -D 2 -i -o "' + '..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + sourceWem + '_' + str(wemIndex) + '.wav" "' + fileProc + '" > .."' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream.log"')
+                                else:
+                                    print("vgmstream-cli not installed!")
+                                    return
+                                os.chdir(".." + os.path.sep + ".." + os.path.sep + "..")
                                 checked[fileID[fSelect][IDtables[fSelect].index(IDCheck)]].append(wemIndex)
-                bankDep = re.findall('wem' + os.sep + '.+#s\d+', fileRead)
+                bankDep = re.findall('wem/.+#s\d+', fileRead)
                 for item in range(len(bankDep)):
                     subsong = fileBaseProc + "-" + bankDep[item].split("#s")[1]
                     if bankDep[item].split("#s")[1] in bankChecked:
                         continue
-                    os.chdir(bankPath + os.sep + "txtp_sorted" + os.sep + folder)
-                    os.system("vgmstream-cli -D 2 -i -o " + ".." + os.sep + ".." + os.sep + ".." + os.sep + flacPath + os.sep + folder + os.sep + fileBaseProc + os.sep + subsong + ".wav " + fileProc + " > .." + os.sep + ".." + os.sep + ".." + os.sep + "vgmstream.log")
-                    os.chdir(".." + os.sep + ".." + os.sep + "..")
+                    os.chdir(bankPath + os.path.sep + "txtp_sorted" + os.path.sep + folder)
+                    if os.path.exists('/usr/local/bin/vgmstream-cli'):
+                        os.system('vgmstream-cli -D 2 -i -o "' + '..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + subsong + '.wav" "' + fileProc + '" > "..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream.log"')
+                    elif os.path.exists('..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream' + os.path.sep + 'vgmstream-cli.exe'):
+                        os.system('..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream' + os.path.sep + 'vgmstream-cli.exe -D 2 -i -o "' + '..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + subsong + '.wav" "' + fileProc + '" > "..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream.log"')
+                    else:
+                        print("vgmstream-cli not installed!")
+                        return
+                    os.chdir(".." + os.path.sep + ".." + os.path.sep + "..")
                     bankChecked.append(bankDep[item].split("#s")[1])
                         
-                for file2 in sorted(os.listdir(flacPath + os.sep + folder + os.sep + fileBase)):
+                for file2 in sorted(os.listdir(flacPath + os.path.sep + folder + os.path.sep + fileBase)):
                     if not file2.endswith(".wav"):
                         continue
                     fileBase2 = file2.split(".")[0].split("~")[0]
                     parent = ""
                     if not file2.startswith("wem"):
-                        parent = ".." + os.sep
-                    os.system("ffmpeg -y -loglevel quiet -i " + flacPath + os.sep + folder + os.sep + fileBaseProc + os.sep + file2 + " " + flacPath + os.sep + folder + os.sep + fileBaseProc + os.sep + parent + fileBase2 + ".flac")
-                    os.remove(flacPath + os.sep + folder + os.sep + fileBase + os.sep + file2)
-                for file3 in sorted(os.listdir(flacPath + os.sep + folder)):
-                    if os.path.isdir(flacPath + os.sep + folder + os.sep + file3) and len(os.listdir(flacPath + os.sep + folder + os.sep + file3)) == 0:
-                        os.system("rm -rf " + flacPath + os.sep + folder + os.sep + file3)
+                        parent = '..' + os.path.sep
+                    if os.path.exists('/usr/local/bin/ffmpeg'):
+                        os.system('ffmpeg -loglevel quiet -y -i "' + flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + file2 + '" "' + flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + parent + fileBase2 + '.flac"')
+                    elif os.path.exists('ffmpeg' + os.path.sep + 'bin' + os.path.sep + 'ffmpeg.exe'):
+                        os.system('ffmpeg' + os.path.sep + 'bin' + os.path.sep + 'ffmpeg.exe -loglevel quiet -y -i "' + flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + file2 + '" "' + flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + parent + fileBase2 + '.flac"')
+                    else:
+                        print("FFMpeg not installed!")
+                        return
+                    os.remove(flacPath + os.path.sep + folder + os.path.sep + fileBase + os.path.sep + file2)
+                for file3 in sorted(os.listdir(flacPath + os.path.sep + folder)):
+                    if os.path.isdir(flacPath + os.path.sep + folder + os.path.sep + file3) and len(os.listdir(flacPath + os.path.sep + folder + os.path.sep + file3)) == 0:
+                        shutil.rmtree(flacPath + os.path.sep + folder + os.path.sep + file3)
         else:
             print("Debug!")
     print("\nSuccess!")

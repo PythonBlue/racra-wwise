@@ -100,12 +100,12 @@ def split(in_string):
         if in_string != "":
             if not os.path.exists("banks_" + in_string):
                 os.makedirs("banks_" + in_string)
-            if os.path.exists("banks_" + in_string + os.sep + sbNames[i] + ".bnk"):
+            if os.path.exists("banks_" + in_string + os.path.sep + sbNames[i] + ".bnk"):
                 continue
         else:
             if not os.path.exists("banks"):
                 os.makedirs("banks")
-            if os.path.exists("banks" + os.sep + sbNames[i] + ".bnk"):
+            if os.path.exists("banks" + os.path.sep + sbNames[i] + ".bnk"):
                 continue
         nameStart = sExport
         in_file_sb.seek(sbStart[i])
@@ -117,10 +117,10 @@ def split(in_string):
         out_bank = open("2", "w")
         if in_string == "us" or in_string == "br":
             out_bank.close()
-            out_bank = open("banks_" + in_string + os.sep + sbNames[i] + ".bnk", "wb")
+            out_bank = open("banks_" + in_string + os.path.sep + sbNames[i] + ".bnk", "wb")
         else:
             out_bank.close()
-            out_bank = open("banks" + os.sep + sbNames[i] + ".bnk", "wb")
+            out_bank = open("banks" + os.path.sep + sbNames[i] + ".bnk", "wb")
         os.remove("2")
         
         out_bank.write(wholeBank)

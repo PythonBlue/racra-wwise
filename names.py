@@ -61,9 +61,9 @@ def names(in_string):
                 
             sCount = 0
             sCounts.append(0)
-            if not os.path.exists(bankPath + os.sep + "wwnames"):
-                os.makedirs(bankPath + os.sep + "wwnames")
-            out_file_txt = open(bankPath + os.sep + "wwnames" + os.sep + sbName.split(".sound")[0] + ".txt", "w")
+            if not os.path.exists(bankPath + os.path.sep + "wwnames"):
+                os.makedirs(bankPath + os.path.sep + "wwnames")
+            out_file_txt = open(bankPath + os.path.sep + "wwnames" + os.path.sep + sbName.split(".sound")[0] + ".txt", "w")
             
             while NTCount < NTEnd - 8:
                 sName = ''
