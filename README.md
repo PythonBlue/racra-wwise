@@ -2,8 +2,6 @@
 
 Sound extraction scripts for Ratchet and Clan: Rift apart for PC
 
-![Screenshot](screenshot.png)
-
 ## Requirements
 
 - Python 3
@@ -19,4 +17,6 @@ VGMStream and FFMpeg need to be installed in the included folders in this reposi
 
 ## Usage
 
-Simply run "python3 runme.py". The scripts will ask for a language suffix (leave blank if you want SFX and music. Only English and Brazilian Portuguese are currently supported), as well as a keyword or phrase to filter by if desired (recommended since the full archives are large and this will take time to extract entirely). The console will start by outputting all of the banks within the soundbank files if it helps you determine the workable filters.
+Simply run "python3 runme.py" in a commandline tool.
+
+The scripts will ask for a language suffix (leave blank if you want SFX and music. Only English and Brazilian Portuguese are currently supported), as well as a keyword or phrase to filter by if desired (recommended since the full archives are large and this will take time to extract entirely). The console will start by outputting all of the banks within the soundbank files if it helps you determine the workable filters.
