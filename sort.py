@@ -153,6 +153,10 @@ def sort(in_string, validType):
                 if not file.endswith(".txtp"):
                     continue
                 fileName = file.split(" ")[0].split("~")[0].split(" (")[0].split("~")[0]
+                fileName2 = file.replace(" {m}", "").replace(" {r}", "").replace(" {s}", "").replace(" ", "").split(".txtp")[0]
+                #fileName2 = re.sub('[(]MUSIC_STATE_GROUP[=]\S+[)]\s?[(]', '(', fileName2)
+                fileName2 = re.sub('[(]\S+[=]', '(', fileName2)
+                fileName2 = fileName2.replace("~", "")
                 if sbNamesinBank[j][i] in fileName:
                     fileName = sbNamesinBank[j][i]
                     #Dupes = False
@@ -179,21 +183,17 @@ def sort(in_string, validType):
                             if os.path.exists(bankPath + os.path.sep + 'txtp_sorted' + os.path.sep + sbNames[j] + os.path.sep + fileName + '_' + str(rcount + offset) + '.txtp'):
                                 while os.path.exists(bankPath + os.path.sep + 'txtp_sorted' + os.path.sep + sbNames[j] + os.path.sep + fileName + '_' + str(rcount + offset) + '.txtp'):
                                     offset += 1
-                            os.system('echo ' + bankDeps[rcount] + ' > "' + bankPath + os.path.sep + 'txtp_sorted' + os.path.sep + sbNames[j] + os.path.sep + fileName + '_' + str(rcount + offset) + '.txtp"')
+                            os.system('echo "' + fr"{bankDeps[rcount]}" + '" > "' + bankPath + os.path.sep + 'txtp_sorted' + os.path.sep + sbNames[j] + os.path.sep + fr"{fileName2}" + '_' + str(rcount + offset) + '.txtp"')
                             checked.append(bankDeps[rcount])
                     elif len(bankDeps) == 1:
                         if ".bnk" in bankDeps[0]:
+                            print(bankDeps[0])
                             bankDeps[0] = bankDeps[0].split(" ")[0] + " " + bankDeps[0].split(" ")[1]
                         if os.system == 'win32' or os.system == 'win64':
                             bankDeps[rcount] = bankDeps[rcount].replace("/", "\\")
                         if bankDeps[0] in checked:
                             continue
-                        offset = 1
-                        if os.path.exists(bankPath + os.path.sep + 'txtp_sorted' + os.path.sep + sbNames[j] + os.path.sep + fileName + '_' + str(offset) + '.txtp'):
-                            while os.path.exists(bankPath + os.path.sep + 'txtp_sorted' + os.path.sep + sbNames[j] + os.path.sep + fileName + '_' + str(offset) + '.txtp'):
-                                offset += 1
-                            fileName += "_" + str(offset)
-                        os.system('echo ' + bankDeps[0] + ' > "' + bankPath + os.path.sep + 'txtp_sorted' + os.path.sep + sbNames[j] + os.path.sep + fileName + '.txtp"')
+                        os.system('echo "' + fr"{bankDeps[0]}" + '" > "' + bankPath + os.path.sep + 'txtp_sorted' + os.path.sep + sbNames[j] + os.path.sep + fr"{fileName2}" + '.txtp"')
                         checked.append(bankDeps[0])
                     #Dupes = True
                     

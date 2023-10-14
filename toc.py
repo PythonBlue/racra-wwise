@@ -308,11 +308,9 @@ def toc(in_string, validType):
             for file in sorted(os.listdir(bankPath + os.path.sep + "txtp_sorted" + os.path.sep + folder)):
                 fileBase = file.split(".")[0].split("~")[0]
                 print("Converting " + fileBase)
-                fileProc = file.replace(" ","\ ")
-                fileProc = fileProc.replace("(","\(").replace(")","\)")
-                fileProc = fileProc.replace("{","\{").replace("}","\}")
-                fileProc = fileProc.replace("[","\[").replace("]","\]")
-                fileBaseProc = fileProc.split(".")[0].split("~")[0]
+                fileProc = fr"{file}"
+                print(fileProc)
+                fileBaseProc = fileProc.split(".")[0]
                 
                 if not os.path.exists(flacPath + os.path.sep + folder + os.path.sep + fileBase):
                     os.makedirs(flacPath + os.path.sep + folder + os.path.sep + fileBase)
@@ -340,9 +338,9 @@ def toc(in_string, validType):
                                     continue
                                 os.chdir(bankPath + os.path.sep + "txtp_sorted" + os.path.sep + folder)
                                 if os.path.exists('/usr/local/bin/vgmstream-cli'):
-                                    os.system('vgmstream-cli -D 2 -i -o "' + '..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + sourceWem + '_' + str(wemIndex) + '.wav" "' + fileProc + '" > "..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream.log"')
+                                    os.system('vgmstream-cli -D 2 -i -o "' + '..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + sourceWem + '_' + str(wemIndex) + '.wav" "' + fileProc + '" >> "..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream.log"')
                                 elif os.path.exists('..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream' + os.path.sep + 'vgmstream-cli.exe'):
-                                    os.system('..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream' + os.path.sep + 'vgmstream-cli.exe -D 2 -i -o "' + '..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + sourceWem + '_' + str(wemIndex) + '.wav" "' + fileProc + '" > .."' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream.log"')
+                                    os.system('..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream' + os.path.sep + 'vgmstream-cli.exe -D 2 -i -o "' + '..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + sourceWem + '_' + str(wemIndex) + '.wav" "' + fileProc + '" >> .."' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream.log"')
                                 else:
                                     print("vgmstream-cli not installed!")
                                     return
@@ -355,9 +353,9 @@ def toc(in_string, validType):
                         continue
                     os.chdir(bankPath + os.path.sep + "txtp_sorted" + os.path.sep + folder)
                     if os.path.exists('/usr/local/bin/vgmstream-cli'):
-                        os.system('vgmstream-cli -D 2 -i -o "' + '..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + subsong + '.wav" "' + fileProc + '" > "..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream.log"')
+                        os.system('vgmstream-cli -D 2 -i -o "' + '..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + subsong + '.wav" "' + fileProc + '" >> "..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream.log"')
                     elif os.path.exists('..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream' + os.path.sep + 'vgmstream-cli.exe'):
-                        os.system('..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream' + os.path.sep + 'vgmstream-cli.exe -D 2 -i -o "' + '..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + subsong + '.wav" "' + fileProc + '" > "..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream.log"')
+                        os.system('..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream' + os.path.sep + 'vgmstream-cli.exe -D 2 -i -o "' + '..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + subsong + '.wav" "' + fileProc + '" >> "..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream.log"')
                     else:
                         print("vgmstream-cli not installed!")
                         return

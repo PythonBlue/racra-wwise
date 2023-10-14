@@ -1,13 +1,3 @@
-# scan data for wave files
-# RIFF and RIFX header supported
-# note: There are wave files with a wrong file size after RIFF/RIFX
-#       This script takes the stream size, adds the header size and writes the correct size after RIFF/RIFX
-# (c) 2012-06-26 by AlphaTwentyThree
-#
-# future update plans:
-# - option to also write data between found wave files to disk
-# - option to automatically transform the file to a playable or at least decodable format
-
 for i = 0                        # run through loop with count variable i
    FindLoc OFFSET string "WAVE" 0 ""   # search for "WAVE", save position as variable OFFSET
    if OFFSET == ""                  # when nothing is found
@@ -25,7 +15,7 @@ for i = 0                        # run through loop with count variable i
       set SIZE 0xc               # do as if something with 0xc bytes was found to continue search from the right position
    endif
    set SEARCH OFFSET               # set marker to position from where to search next
-   math SEARCH += 256               # (that would be after the file that was found)
+   math SEARCH += SIZE               # (that would be after the file that was found)
    if SEARCH == FSIZE               # in case the last found file ends with the main file, we exit
       cleanexit
    endif

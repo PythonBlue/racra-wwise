@@ -33,8 +33,10 @@ for folder in sorted(os.listdir(bankPath + os.path.sep + "wwnames" + os.path.sep
     if folder.endswith(".txt"):
         if in_skip != "" and in_skip not in folder.split(".txt")[0]:
             continue
+        if folder.split(".txt")[0] == "init":
+            continue
         if os.path.exists("wwiser.pyz") and os.path.exists("wwnames.db3"):
-            os.system('python3 wwiser.pyz -g -go "txtp' + os.path.sep + folder.split(".")[0] + '" -gw "..' + os.path.sep + '..' + os.path.sep + 'wem" -gbo -nl "' + bankPath + os.path.sep + 'wwnames' + os.path.sep + folder + '" -l "' + bankPath + os.path.sep + folder.split(".")[0] + '.bnk"')
+            os.system('python3 wwiser.pyz -g -go "txtp' + os.path.sep + folder.split(".")[0] + '" -gw "..' + os.path.sep + '..' + os.path.sep + 'wem" -gbo -nl "' + bankPath + os.path.sep + 'wwnames' + os.path.sep + folder + '" -l "' + bankPath + os.path.sep + folder.split(".")[0] + '.bnk" "' + bankPath + os.path.sep + 'init.bnk"')
         else:
             print("WWiser and/or wwnames.db3 not installed!")
             debug = True

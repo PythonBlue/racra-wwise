@@ -82,7 +82,7 @@ def names(in_string, validType):
                     sRead = in_file_sb.read(1)
                     NTCount += 1
 
-                if len(sName) < 4 or NTCount > NTEnd - 8:
+                if NTCount > NTEnd - 8:
                     in_file_sb.seek(-1,1)
                     break
                 #if sName.find("VFX_SWITCH_LOADER") >= 0:
@@ -117,6 +117,31 @@ def names(in_string, validType):
         in_file_sb.seek(1,1)
     in_file_sb.close()
     os.remove("tmp")
+
+    #try:
+    if os.path.exists(bankPath + os.path.sep + "wwnames" + os.path.sep + "init.txt"):
+        in_file_txt = open(bankPath + os.path.sep + "wwnames" + os.path.sep + "init.txt", "r")
+        inread = in_file_txt.read()
+        in_file_txt.close()
+        for outfile in sorted(os.listdir(bankPath + os.path.sep + "wwnames")):
+            if not outfile.endswith(".txt") or outfile == "init.txt":
+                continue
+            out_file_txt = open(bankPath + os.path.sep + "wwnames" + os.path.sep + outfile, "a")
+            out_file_txt.write(inread)
+            out_file_txt.close()
+    elif os.path.exists("init.txt"):
+        in_file_txt = open("init.txt", "r")
+        inread = in_file_txt.read()
+        in_file_txt.close()
+        for outfile in sorted(os.listdir(bankPath + os.path.sep + "wwnames")):
+            if not outfile.endswith(".txt") or outfile == "init.txt":
+                continue
+            out_file_txt = open(bankPath + os.path.sep + "wwnames" + os.path.sep + outfile, "a")
+            out_file_txt.write(inread)
+            out_file_txt.close()
+    #except:
+        #print("No init.bnk file")
+    
     
 #in_string = input("Rift Apart WWise Bank Language Suffix: ")
 #names(in_string)
