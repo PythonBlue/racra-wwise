@@ -12,14 +12,14 @@ def natural_sort(l):
 def toc(in_string, validType):
     bankPath = "banks"
     soundPath = "sound"
-    flacPath = "flac"
+    flacPath = "extracted"
     in_file_sb = open("tmp", "wb")
     if validType == True:
         in_file_sb.close()
         in_file_sb = open("soundbank." + in_string, "rb")
         bankPath = "banks_" + in_string
         soundPath = "sound_" + in_string
-        flacPath = "flac_" + in_string
+        flacPath = "extracted_" + in_string
     else:
         in_file_sb.close()
         in_file_sb = open("soundbank", "rb")
@@ -295,6 +295,9 @@ def toc(in_string, validType):
     if not os.path.exists(bankPath + os.path.sep + "wem"):
         os.makedirs(bankPath + os.path.sep + "wem")
 
+    if os.path.exists(flacPath):
+        shutil.rmtree(flacPath)
+
     for file in sorted(os.listdir(bankPath)):
         if not file.endswith(".bnk"):
             continue
@@ -336,16 +339,19 @@ def toc(in_string, validType):
                                 wemIndex = fileIndex[fileID[fSelect][IDtables[fSelect].index(IDCheck)]].index(offCheck)
                                 if wemIndex in checked[fileID[fSelect][IDtables[fSelect].index(IDCheck)]]:
                                     continue
-                                metaPath = flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + sourceWem + '_' + str(wemIndex) + '.txt'
+                                sourceWem2 = "wem"
+                                if in_string == "":
+                                    sourceWem2 = sourceWem
+                                metaPath = flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + sourceWem2 + '_' + str(wemIndex) + '.txt'
                                 metaFile = open(metaPath, "w")
                                 metaFile.write('Replace this file name base with a custom Wwise "wem" file.')
                                 metaFile.close()
                 bankDep = re.findall('wem/.+#s\d+', fileRead)
                 for item in range(len(bankDep)):
-                    subsong = fileBaseProc + "-" + bankDep[item].split("#s")[1]
+                    subsong = folder + "_" + str(int(bankDep[item].split("#s")[1]) - 1)
                     if bankDep[item].split("#s")[1] in bankChecked:
                         continue
-                    metaPath = '..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + subsong + '.txt'
+                    metaPath = flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + subsong + '.txt'
                     metaFile = open(metaPath, "w")
                     metaFile.write('Replace this file name base with a custom Wwise "wem" file.')
                     metaFile.close()
