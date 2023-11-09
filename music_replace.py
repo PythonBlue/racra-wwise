@@ -1,6 +1,6 @@
 import os, re, struct
 
-bank = open("mod" + os.path.sep + "soundbank_323.bnk", "rb+")
+bank = open("banks" + os.path.sep + "soundbank_323.bnk", "rb+")
 bank.seek(0,2)
 bankSize = bank.tell()
 
@@ -8,9 +8,9 @@ tracks = []
 trackData = []
 segments = []
 segmentData = []
-for file in sorted(os.listdir("mod" + os.path.sep + "txtp")):
+for file in sorted(os.listdir("banks" + os.path.sep + "txtp")):
     if file.endswith(".txtp"):
-        txtp = open("mod" + os.path.sep + "txtp" + os.path.sep + file, "r")
+        txtp = open("banks" + os.path.sep + "txtp" + os.path.sep + file, "r")
         txtpRead = txtp.read()
         txtp.close()
         segmentFind = re.findall('CAkMusicSegment[\[]\d+[\]]\s+\d+', txtpRead)

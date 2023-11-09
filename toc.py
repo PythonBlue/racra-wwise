@@ -336,50 +336,20 @@ def toc(in_string, validType):
                                 wemIndex = fileIndex[fileID[fSelect][IDtables[fSelect].index(IDCheck)]].index(offCheck)
                                 if wemIndex in checked[fileID[fSelect][IDtables[fSelect].index(IDCheck)]]:
                                     continue
-                                os.chdir(bankPath + os.path.sep + "txtp_sorted" + os.path.sep + folder)
-                                if os.path.exists('/usr/local/bin/vgmstream-cli'):
-                                    os.system('vgmstream-cli -D 2 -i -o "' + '..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + sourceWem + '_' + str(wemIndex) + '.wav" "' + fileProc + '" >> "..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream.log"')
-                                elif os.path.exists('..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream' + os.path.sep + 'vgmstream-cli.exe'):
-                                    os.system('..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream' + os.path.sep + 'vgmstream-cli.exe -D 2 -i -o "' + '..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + sourceWem + '_' + str(wemIndex) + '.wav" "' + fileProc + '" >> .."' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream.log"')
-                                else:
-                                    print("vgmstream-cli not installed!")
-                                    return
-                                os.chdir(".." + os.path.sep + ".." + os.path.sep + "..")
-                                checked[fileID[fSelect][IDtables[fSelect].index(IDCheck)]].append(wemIndex)
+                                metaPath = flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + sourceWem + '_' + str(wemIndex) + '.txt'
+                                metaFile = open(metaPath, "w")
+                                metaFile.write('Replace this file name base with a custom Wwise "wem" file.')
+                                metaFile.close()
                 bankDep = re.findall('wem/.+#s\d+', fileRead)
                 for item in range(len(bankDep)):
                     subsong = fileBaseProc + "-" + bankDep[item].split("#s")[1]
                     if bankDep[item].split("#s")[1] in bankChecked:
                         continue
-                    os.chdir(bankPath + os.path.sep + "txtp_sorted" + os.path.sep + folder)
-                    if os.path.exists('/usr/local/bin/vgmstream-cli'):
-                        os.system('vgmstream-cli -D 2 -i -o "' + '..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + subsong + '.wav" "' + fileProc + '" >> "..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream.log"')
-                    elif os.path.exists('..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream' + os.path.sep + 'vgmstream-cli.exe'):
-                        os.system('..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream' + os.path.sep + 'vgmstream-cli.exe -D 2 -i -o "' + '..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + subsong + '.wav" "' + fileProc + '" >> "..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream.log"')
-                    else:
-                        print("vgmstream-cli not installed!")
-                        return
-                    os.chdir(".." + os.path.sep + ".." + os.path.sep + "..")
+                    metaPath = '..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + subsong + '.txt"
+                    metaFile = open(metaPath, "w")
+                    metaFile.write('Replace this file name base with a custom Wwise "wem" file.')
+                    metaFile.close()
                     bankChecked.append(bankDep[item].split("#s")[1])
-                        
-                for file2 in sorted(os.listdir(flacPath + os.path.sep + folder + os.path.sep + fileBase)):
-                    if not file2.endswith(".wav"):
-                        continue
-                    fileBase2 = file2.split(".")[0].split("~")[0]
-                    parent = ""
-                    if not file2.startswith("wem"):
-                        parent = '..' + os.path.sep
-                    if os.path.exists('/usr/local/bin/ffmpeg'):
-                        os.system('ffmpeg -loglevel quiet -y -i "' + flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + file2 + '" "' + flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + parent + fileBase2 + '.flac"')
-                    elif os.path.exists('ffmpeg' + os.path.sep + 'bin' + os.path.sep + 'ffmpeg.exe'):
-                        os.system('ffmpeg' + os.path.sep + 'bin' + os.path.sep + 'ffmpeg.exe -loglevel quiet -y -i "' + flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + file2 + '" "' + flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + parent + fileBase2 + '.flac"')
-                    else:
-                        print("FFMpeg not installed!")
-                        return
-                    os.remove(flacPath + os.path.sep + folder + os.path.sep + fileBase + os.path.sep + file2)
-                for file3 in sorted(os.listdir(flacPath + os.path.sep + folder)):
-                    if os.path.isdir(flacPath + os.path.sep + folder + os.path.sep + file3) and len(os.listdir(flacPath + os.path.sep + folder + os.path.sep + file3)) == 0:
-                        shutil.rmtree(flacPath + os.path.sep + folder + os.path.sep + file3)
         else:
             print("Debug!")
     print("\nSuccess!")

@@ -2,6 +2,7 @@ import os
 import shutil
 import subprocess
 import re
+import platform
 
 def sort(in_string, validType):
     in_file_sb = open("tmp", "wb")
@@ -154,6 +155,8 @@ def sort(in_string, validType):
                     continue
                 fileName = file.split(" ")[0].split("~")[0].split(" (")[0].split("~")[0]
                 fileName2 = file.replace(" {m}", "").replace(" {r}", "").replace(" {s}", "").replace(" ", "").split(".txtp")[0]
+                if platform.system() == "Windows":
+                    fileName2 = fileName2.replace('/', '\\')
                 #fileName2 = re.sub('[(]MUSIC_STATE_GROUP[=]\S+[)]\s?[(]', '(', fileName2)
                 fileName2 = re.sub('[(]\S+[=]', '(', fileName2)
                 fileName2 = fileName2.replace("~", "")
@@ -175,7 +178,7 @@ def sort(in_string, validType):
                         for rcount in range(len(bankDeps)):
                             if ".bnk" in bankDeps[rcount]:
                                 bankDeps[rcount] = bankDeps[rcount].split(" ")[0] + " " + bankDeps[rcount].split(" ")[1]
-                            if os.system == 'win32' or os.system == 'win64':
+                            if platform.system() == "Windows":
                                 bankDeps[rcount] = bankDeps[rcount].replace("/", "\\")
                             if bankDeps[rcount] in checked:
                                 continue
@@ -183,17 +186,17 @@ def sort(in_string, validType):
                             if os.path.exists(bankPath + os.path.sep + 'txtp_sorted' + os.path.sep + sbNames[j] + os.path.sep + fileName + '_' + str(rcount + offset) + '.txtp'):
                                 while os.path.exists(bankPath + os.path.sep + 'txtp_sorted' + os.path.sep + sbNames[j] + os.path.sep + fileName + '_' + str(rcount + offset) + '.txtp'):
                                     offset += 1
-                            os.system('echo "' + fr"{bankDeps[rcount]}" + '" > "' + bankPath + os.path.sep + 'txtp_sorted' + os.path.sep + sbNames[j] + os.path.sep + fr"{fileName2}" + '_' + str(rcount + offset) + '.txtp"')
+                            os.system('echo ' + fr"{bankDeps[rcount]}" + ' > "' + bankPath + os.path.sep + 'txtp_sorted' + os.path.sep + sbNames[j] + os.path.sep + fr"{fileName2}" + '_' + str(rcount + offset) + '.txtp"')
                             checked.append(bankDeps[rcount])
                     elif len(bankDeps) == 1:
                         if ".bnk" in bankDeps[0]:
                             print(bankDeps[0])
                             bankDeps[0] = bankDeps[0].split(" ")[0] + " " + bankDeps[0].split(" ")[1]
-                        if os.system == 'win32' or os.system == 'win64':
-                            bankDeps[rcount] = bankDeps[rcount].replace("/", "\\")
+                        if platform.system() == "Windows":
+                            bankDeps[0] = bankDeps[0].replace("/", "\\")
                         if bankDeps[0] in checked:
                             continue
-                        os.system('echo "' + fr"{bankDeps[0]}" + '" > "' + bankPath + os.path.sep + 'txtp_sorted' + os.path.sep + sbNames[j] + os.path.sep + fr"{fileName2}" + '.txtp"')
+                        os.system('echo ' + fr"{bankDeps[0]}" + ' > "' + bankPath + os.path.sep + 'txtp_sorted' + os.path.sep + sbNames[j] + os.path.sep + fr"{fileName2}" + '.txtp"')
                         checked.append(bankDeps[0])
                     #Dupes = True
                     
