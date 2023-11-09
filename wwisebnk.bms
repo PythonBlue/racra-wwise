@@ -1,3 +1,13 @@
+# scan data for wave files
+# RIFF and RIFX header supported
+# note: There are wave files with a wrong file size after RIFF/RIFX
+#       This script takes the stream size, adds the header size and writes the correct size after RIFF/RIFX
+# (c) 2012-06-26 by AlphaTwentyThree
+#
+# future update plans:
+# - option to also write data between found wave files to disk
+# - option to automatically transform the file to a playable or at least decodable format
+
 set OFFTOTAL 0
 
 for i = 0

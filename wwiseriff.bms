@@ -1,3 +1,13 @@
+# scan data for wave files
+# RIFF and RIFX header supported
+# note: There are wave files with a wrong file size after RIFF/RIFX
+#       This script takes the stream size, adds the header size and writes the correct size after RIFF/RIFX
+# (c) 2012-06-26 by AlphaTwentyThree
+#
+# future update plans:
+# - option to also write data between found wave files to disk
+# - option to automatically transform the file to a playable or at least decodable format
+
 for i = 0                        # run through loop with count variable i
    FindLoc OFFSET string "WAVE" 0 ""   # search for "WAVE", save position as variable OFFSET
    if OFFSET == ""                  # when nothing is found
