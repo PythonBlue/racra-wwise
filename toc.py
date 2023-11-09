@@ -345,7 +345,7 @@ def toc(in_string, validType):
                     subsong = fileBaseProc + "-" + bankDep[item].split("#s")[1]
                     if bankDep[item].split("#s")[1] in bankChecked:
                         continue
-                    metaPath = '..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + subsong + '.txt"
+                    metaPath = '..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + subsong + '.txt'
                     metaFile = open(metaPath, "w")
                     metaFile.write('Replace this file name base with a custom Wwise "wem" file.')
                     metaFile.close()

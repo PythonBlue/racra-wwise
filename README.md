@@ -17,7 +17,7 @@ WWiser and its wwnames.db3 dependency need to be in the root folder of this repo
 
 2. Simply run "python3 runme.py" in a commandline tool.
 
-The scripts will ask for a language suffix (leave blank if you want SFX and music), as well as a keyword or phrase to filter by if desired (recommended since the full archives are large and thus will take time to extract entirely). The console will start by outputting all of the banks within the soundbank files if it helps you determine the workable filters.
+The scripts will ask for a language suffix (leave blank if you want SFX and music), as well as a keyword or phrase to filter by if desired. The console will start by outputting all of the banks within the soundbank files if it helps you determine the workable filters.
 
 For files that are embedded in the wem files, the resulting filenames will correspond to if they were extracted using the included "wwiseriff.bms" quickbms script.
 
