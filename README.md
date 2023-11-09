@@ -9,6 +9,8 @@ Sound extraction scripts for Ratchet and Clan: Rift apart for PC
 
 WWiser and its wwnames.db3 dependency need to be in the root folder of this repository.
 
+[Wwiser]:	https://github.com/vgmstream/vgmstream
+
 ## Usage
 
 1. Copy or move the desired "soundbank" and "wem" files (in the "d" subdirectory of the game) and "toc" into the root folder.
