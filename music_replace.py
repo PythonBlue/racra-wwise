@@ -13,6 +13,7 @@ for file in sorted(os.listdir("banks" + os.path.sep + "txtp")):
         txtp = open("banks" + os.path.sep + "txtp" + os.path.sep + file, "r")
         txtpRead = txtp.read()
         txtp.close()
+        listFind = re.findall(' wem.+', txtpRead)
         segmentFind = re.findall('CAkMusicSegment[\[]\d+[\]]\s+\d+', txtpRead)
         if len(segmentFind) <= 0:
             continue
@@ -69,9 +70,26 @@ for i in range(HIRCCount - 32):
             segCheck = int(segments[j].split("\n")[0]).to_bytes(4, "little")
             #print(segCheck)
             if segCheck == HIRCItemData[:4]:
-                #print("Check!")
+                
+                fVolume = 0
+                bank.seek(CurrOff + 22)
+                propCheck = int.from_bytes(bank.read(1), "little")
+                if propCheck > 0:
+                    volumeProp = 0
+                    for iteration in range(propCheck):
+                        propCheck2 = int.from_bytes(bank.read(1), "little")
+                        if propCheck2 == 1:
+                            volumeProp = iteration
+                    for iter2 in range(volumeProp):
+                        bank.seek(4,1)
+                    fVolumeFinds = re.findall('Volume:\s+([-]?\d+[.]?\d*)',segmentData[j])
+                    if len(fVolumeFinds) > 0:
+                        fVolume = float(fVolumeFinds[0])
+                        bank.write(struct.pack('<f', float(fVolume)))
+                        
+                bank.seek(CurrOff + 5)
                 fDuration = float(segmentData[j][segmentData[j].find('fDuration: ') + 11:].split('\n')[0])
-                fEndMark = re.findall('AkMusicMarkerWwise:\s+(\d+[.]?\d+)',segmentData[j])
+                fEndMark = re.findall('AkMusicMarkerWwise:\s+(\d+[.]?\d*)',segmentData[j])
                 offFix = HIRCItemData.find(b'\x42\x04\x04\x00')
                 offFix2 = HIRCItemData.find(b'\x42\x04\x04\x01')
                 offFix3 = HIRCItemData.find(b'\x43\x04\x04\x00')
@@ -119,7 +137,16 @@ for i in range(HIRCCount - 32):
                 for k in range(numSubTrack):
                     IDCheck = int.from_bytes(bank.read(4),"little")
                     sourceID = int(trackData[j][trackData[j].find('sourceID: ') + 10:].split('\n')[0])
-                    bank.seek(12,1)
+                    if IDCheck != sourceID:
+                        bank.seek(-4,1)
+                        bank.write(sourceID.to_bytes(4,"little"))
+                        stamp = bank.tell()
+                        bank.seek(CurrOff + 19 + (14 * k))
+                        bank.write(sourceID.to_bytes(4,"little"))
+                        bank.seek(stamp)
+                    bank.seek(4,1)
+                    fPlayAt = float(trackData[j][trackData[j].find('fPlayAt: ') + 9:].split('\n')[0])
+                    bank.write(struct.pack('<d', fPlayAt))
                     fBeginTrimOffset = float(trackData[j][trackData[j].find('fBeginTrimOffset: ') + 18:].split('\n')[0])
                     bank.write(struct.pack('<d', fBeginTrimOffset))
                     fEndTrimOffset = float(trackData[j][trackData[j].find('fEndTrimOffset: ') + 16:].split('\n')[0])
