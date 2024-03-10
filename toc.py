@@ -342,16 +342,15 @@ def toc(in_string, validType):
                                 sourceWem2 = "wem"
                                 if in_string == "":
                                     sourceWem2 = sourceWem
-                                metaPath = flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + sourceWem2 + '_' + str(wemIndex) + '.txt'
+                                metaPath = flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + str(IDCheck) + '.txt'
                                 metaFile = open(metaPath, "w")
                                 metaFile.write('Replace this file name base with a custom Wwise "wem" file.')
                                 metaFile.close()
-                bankDep = re.findall('wem/.+#s\d+', fileRead)
+                bankDep = re.findall('wem/.+\n[#][#]\d+', fileRead)
                 for item in range(len(bankDep)):
-                    subsong = folder + "_" + str(int(bankDep[item].split("#s")[1]) - 1)
-                    if bankDep[item].split("#s")[1] in bankChecked:
+                    if bankDep[item].split("\n##")[1] in bankChecked:
                         continue
-                    metaPath = flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + subsong + '.txt'
+                    metaPath = flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + bankDep[item].split("\n##")[1] + '.txt'
                     metaFile = open(metaPath, "w")
                     metaFile.write('Replace this file name base with a custom Wwise "wem" file.')
                     metaFile.close()

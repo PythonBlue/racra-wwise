@@ -180,7 +180,7 @@ def sort(in_string, validType):
                     if len(bankDeps) > 1:
                         for rcount in range(len(bankDeps)):
                             if ".bnk" in bankDeps[rcount]:
-                                bankDeps[rcount] = bankDeps[rcount].split(" ")[0] + " " + bankDeps[rcount].split(" ")[1]
+                                bankDeps[rcount] = bankDeps[rcount].split(" ")[0] + " " + bankDeps[rcount].split(" ")[1] + "\n##" + bankDeps[rcount].split("##")[1]
                             if platform.system() == "Windows":
                                 bankDeps[rcount] = bankDeps[rcount].replace("/", "\\")
                             if bankDeps[rcount] in checked:
@@ -196,7 +196,7 @@ def sort(in_string, validType):
                             #checked.append(bankDeps[rcount])
                     elif len(bankDeps) == 1:
                         if ".bnk" in bankDeps[0]:
-                            bankDeps[0] = bankDeps[0].split(" ")[0] + " " + bankDeps[0].split(" ")[1]
+                            bankDeps[0] = bankDeps[0].split(" ")[0] + " " + bankDeps[0].split(" ")[1] + "\n##" + bankDeps[0].split("##")[1].split(".")[0]
                         if platform.system() == "Windows":
                             bankDeps[0] = bankDeps[0].replace("/", "\\")
                         if bankDeps[0] in checked:
