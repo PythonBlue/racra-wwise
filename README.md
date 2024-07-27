@@ -1,6 +1,6 @@
 # RACRA-WWise
 
-Sound modding scripts for Ratchet and Clan: Rift apart for PC
+Sound modding scripts for Ratchet and Clank: Rift apart for PC
 
 ## Requirements
 
