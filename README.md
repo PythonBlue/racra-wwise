@@ -61,7 +61,7 @@ If you hesitate to replace existing sounds completely, I've confirmed you can ad
 
 1. Create WEM files from your desired sounds using WWise, preferably the 2019 edition if you need the Opus codec used for the game (which goes for all of the dialog). Changing formats in the soundbank metadata may be implemented later
 2. Confirm a sound ID that is unused in the game. Everything between 4294963200 and 4294967295 (the maximum possible ID) is guaranteed free game from what I've found, though there are more in many smaller ranges.
-3. Rename the WEM file you wish to add to "E0000000" followed by a hexadecimal representation of the ID number you decided on, with no extension.
+3. Rename the WEM file you wish to add to "E0000000" followed by a hexadecimal representation of the ID number you decided on, with no extension. For example, sound ID 4294963200 would become "E0000000FFFFF000"
 4. Move the renamed file into your stage project's directory. Unless you're working with dialog, this will be in the "3" subdirectory of your project.
 5. Use Modding Tool as usual (ignore the warning when creating a stage file about new assets not being implemented)
 
