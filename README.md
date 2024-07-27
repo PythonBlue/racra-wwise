@@ -1,6 +1,6 @@
 # RACRA-WWise
 
-Sound extraction scripts for Ratchet and Clan: Rift apart for PC
+Sound modding scripts for Ratchet and Clan: Rift apart for PC
 
 ## Requirements
 
@@ -46,7 +46,7 @@ The included "sound_replace" script also depends on modifying the txtp files gen
 - **normalize** - for undoing realtime automation data and setting the volume to a constant gain between 0 and 1. Write in a CAkMusicTrack section in the generated TXTP files
 - **fVolume** - another method of adjusting volume, if realtime automation is not used. Write in a CAkMusicSegment
 
-**Not all sounds specify volume or autmation! Use at your own risk!**
+**Not all sounds specify volume or automation! Use at your own risk!**
 
 ### Example Sound Replacement
 - python sound_replace.py music
