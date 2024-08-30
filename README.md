@@ -45,6 +45,9 @@ The included "sound_replace" script also depends on modifying the txtp files gen
 ### Additional TXTP Parameters ###
 - **normalize** - for undoing realtime automation data and setting the volume to a constant gain between 0 and 1. Write in a CAkMusicTrack section in the generated TXTP files
 - **fVolume** - another method of adjusting volume, if realtime automation is not used. Write in a CAkMusicSegment
+- **fTempo** - the tempo of given music in a CAkMusicSegment. Likely only needed for transitioning from looping audio
+- **fTimeNumerator** - the first value of the time signature. Usually 4 in the game
+- **fTimeDenominator** - the second value of the time signature. Usually 4 in the game
 
 **Not all sounds specify volume or automation! Use at your own risk!**
 

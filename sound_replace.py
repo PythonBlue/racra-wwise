@@ -135,7 +135,7 @@ def run(bank_name):
                     soundSourceCheck = int((soundData[j].split("Source ")[1]).split("\n")[0]).to_bytes(4, "little")
                     if soundSourceCheck != int.from_bytes(HIRCItemData[9:13], "little"):
                         bank.seek(CurrOff + 13)
-                        bank.write(b'\x01')
+                        bank.write(b'\x02')
                         bank.write(soundSourceCheck)
                         print("Sound " + str(int.from_bytes(HIRCItemData[9:13], "little")) + " replaced with " + str(int.from_bytes(soundSourceCheck, "little")) + "!")
                 
@@ -148,7 +148,6 @@ def run(bank_name):
             for j in range(len(segments)):
                 segCheck = int(segments[j].split("\n")[0]).to_bytes(4, "little")
                 if segCheck == HIRCItemData[:4]:
-                    
                     fVolume = 0
                     bank.seek(CurrOff + 22)
                     propCheck = int.from_bytes(bank.read(1), "little")
@@ -166,39 +165,33 @@ def run(bank_name):
                             bank.write(struct.pack('<f', float(fVolume)))
                             
                     bank.seek(CurrOff + 5)
+                    fTempo = 0
+                    fTimeNumerator = 0
+                    fTimeDenominator = 0
+                    if segmentData[j].find('fTempo: ') > 0:
+                        fTempo = float(segmentData[j][segmentData[j].find('fTempo: ') + 8:].split('\n')[0])
+                    if segmentData[j].find('fTimeNumerator: ') > 0 and segmentData[j].find('fTimeDenominator: ') > 0:
+                        fTimeNumerator = int(re.findall('fTimeNumerator:\\s(\\d+)', segmentData[j])[0])
+                        fTimeDenominator = int(re.findall('fTimeDenominator:\\s(\\d+)', segmentData[j])[0])
+                        if fTimeDenominator != 2 and fTimeDenominator != 4 and fTimeDenominator != 8 and fTimeDenominator != 16:
+                            fTimeNumerator = 0
+                            fTimeDenominator = 0
                     fDuration = float(segmentData[j][segmentData[j].find('fDuration: ') + 11:].split('\n')[0])
                     fEndMark = re.findall('AkMusicMarkerWwise:\\s+(\\d+[.]?\\d*)',segmentData[j])
-                    offFix = HIRCItemData.find(b'\x42\x04\x04\x00')
-                    offFix2 = HIRCItemData.find(b'\x42\x04\x04\x01')
-                    offFix3 = HIRCItemData.find(b'\x43\x04\x04\x00')
-                    offFix4 = HIRCItemData.find(b'\x43\x04\x04\x01')
+                    offFix = HIRCItemSize - 50
                     if offFix > 0:
-                        bank.seek(CurrOff + offFix + 13)
+                        bank.seek(CurrOff + offFix)
+                        if fTempo > 0:
+                            bank.write(struct.pack('<f', fTempo))
+                        bank.seek(CurrOff + offFix + 4)
+                        if fTimeNumerator > 0 and fTimeDenominator > 0:
+                            bank.write(fTimeNumerator.to_bytes(1,"little"))
+                            bank.write(fTimeDenominator.to_bytes(1,"little"))
+                        bank.seek(CurrOff + offFix + 11)
                         bank.write(struct.pack('<d', fDuration))
-                        bank.seek(CurrOff + offFix + 29)
+                        bank.seek(CurrOff + offFix + 27)
                         bank.write(struct.pack('<d', float(fEndMark[0])))
-                        bank.seek(CurrOff + offFix + 45)
-                        bank.write(struct.pack('<d', float(fEndMark[1])))
-                    elif offFix2 > 0:
-                        bank.seek(CurrOff + offFix2 + 13)
-                        bank.write(struct.pack('<d', fDuration))
-                        bank.seek(CurrOff + offFix2 + 29)
-                        bank.write(struct.pack('<d', float(fEndMark[0])))
-                        bank.seek(CurrOff + offFix2 + 45)
-                        bank.write(struct.pack('<d', float(fEndMark[1])))
-                    elif offFix3 > 0:
-                        bank.seek(CurrOff + offFix3 + 13)
-                        bank.write(struct.pack('<d', fDuration))
-                        bank.seek(CurrOff + offFix3 + 29)
-                        bank.write(struct.pack('<d', float(fEndMark[0])))
-                        bank.seek(CurrOff + offFix3 + 45)
-                        bank.write(struct.pack('<d', float(fEndMark[1])))
-                    elif offFix4 > 0:
-                        bank.seek(CurrOff + offFix4 + 13)
-                        bank.write(struct.pack('<d', fDuration))
-                        bank.seek(CurrOff + offFix4 + 29)
-                        bank.write(struct.pack('<d', float(fEndMark[0])))
-                        bank.seek(CurrOff + offFix4 + 45)
+                        bank.seek(CurrOff + offFix + 43)
                         bank.write(struct.pack('<d', float(fEndMark[1])))
                     else:
                         print("Address later!")
@@ -214,55 +207,65 @@ def run(bank_name):
                     bank.seek(CurrOff + 10)
                     numSubTrack = int.from_bytes(bank.read(1), "little")
                     bank.seek(CurrOff + 22)
+                    numSubTrack2 = []
                     for k in range(numSubTrack):
-                        bank.seek(14,1)
+                        bank.seek(6,1)
+                        subTrackCheck = int.from_bytes(bank.read(1), "little")
+                        if subTrackCheck <= 4 and subTrackCheck > 1:
+                            numSubTrack2.append(subTrackCheck)
+                        else:
+                            numSubTrack2.append(1)
+                        bank.seek(7,1)
                     for k in range(numSubTrack):
-                        IDCheck = int.from_bytes(bank.read(4),"little")
-                        sourceID = int(trackData[j][trackData[j].find('sourceID: ') + 10:].split('\n')[0])
-                        if IDCheck != sourceID:
-                            bank.seek(-4,1)
-                            bank.write(sourceID.to_bytes(4,"little"))
-                            stamp = bank.tell()
-                            bank.seek(CurrOff + 19 + (14 * k))
-                            bank.write(sourceID.to_bytes(4,"little"))
-                            bank.seek(stamp)
-                            print("Music " + str(IDCheck) + " replaced with " + str(sourceID) + "!")
-                        bank.seek(4,1)
-                        fPlayAt = float(trackData[j][trackData[j].find('fPlayAt: ') + 9:].split('\n')[0])
-                        bank.write(struct.pack('<d', fPlayAt))
-                        fBeginTrimOffset = float(trackData[j][trackData[j].find('fBeginTrimOffset: ') + 18:].split('\n')[0])
-                        bank.write(struct.pack('<d', fBeginTrimOffset))
-                        fEndTrimOffset = float(trackData[j][trackData[j].find('fEndTrimOffset: ') + 16:].split('\n')[0])
-                        bank.write(struct.pack('<d', fEndTrimOffset))
-                        fSrcDuration = float(trackData[j][trackData[j].find('fSrcDuration: ') + 14:].split('\n')[0])
-                        bank.write(struct.pack('<d', fSrcDuration))
-                        bank.seek(4,1)
-                        numAutos = int.from_bytes(bank.read(4), "little")
-                        if (numAutos == 1 or numAutos == 2) and IDB in normalizeList:
-                            autoCheck = autoData.index(int.from_bytes(trackCheck, "little"))
-                            bank.seek(8,1)
-                            numAutoSteps = int.from_bytes(bank.read(4), "little")
-                            theCounter = 0
-                            normalizeIndex = normalizeList.index(IDB)
-                            for n in range(numAutoSteps):
-                                if autoData[autoCheck + 1] > numAutoSteps:
-                                    break
-                                [fTimeIn] = struct.unpack('f',bank.read(4))
-                                [fValIn] = struct.unpack('f',bank.read(4))
-                                fCurveType = int.from_bytes(bank.read(4),"little")
-                                if fCurveType == 9:
-                                    print("Fixme")
-                                    continue
+                        for m in range(numSubTrack2[k]):
+                            IDCheck = int.from_bytes(bank.read(4),"little")
+                            if IDCheck == 0:
+                                break
+                            sourceID = int(re.findall('sourceID\\: (\\d+)', trackData[j])[k+m])
+                            if IDCheck != sourceID:
+                                bank.seek(-4,1)
+                                bank.write(sourceID.to_bytes(4,"little"))
+                                stamp = bank.tell()
+                                bank.seek(CurrOff + 19 + (14 * k))
+                                bank.write(sourceID.to_bytes(4,"little"))
+                                bank.seek(stamp)
+                                print("Music " + str(IDCheck) + " replaced with " + str(sourceID) + "!")
+                            bank.seek(4,1)
+                            fPlayAt = float(re.findall('fPlayAt\\: ([-]?\\d+)', trackData[j])[k+m])
+                            bank.write(struct.pack('<d', fPlayAt))
+                            fBeginTrimOffset = float(re.findall('fBeginTrimOffset\\: ([-]?\\d+)', trackData[j])[k+m])
+                            bank.write(struct.pack('<d', fBeginTrimOffset))
+                            fEndTrimOffset = float(re.findall('fEndTrimOffset\\: ([-]?\\d+)', trackData[j])[k+m])
+                            bank.write(struct.pack('<d', fEndTrimOffset))
+                            fSrcDuration = float(re.findall('fSrcDuration\\: ([-]?\\d+)', trackData[j])[k+m])
+                            bank.write(struct.pack('<d', fSrcDuration))
+                            bank.seek(4,1)
+                            numAutos = int.from_bytes(bank.read(4), "little")
+                            if (numAutos == 1 or numAutos == 2) and IDB in normalizeList:
+                                autoCheck = autoData.index(int.from_bytes(trackCheck, "little"))
+                                bank.seek(8,1)
+                                numAutoSteps = int.from_bytes(bank.read(4), "little")
+                                normalizeIndex = normalizeList.index(IDB)
+                                for n in range(numAutoSteps):
+                                    if autoData[autoCheck + 1] > numAutoSteps:
+                                        break
+                                    [fTimeIn] = struct.unpack('f',bank.read(4))
+                                    [fValIn] = struct.unpack('f',bank.read(4))
+                                    fCurveType = int.from_bytes(bank.read(4),"little")
+                                    if fCurveType == 9:
+                                        print("Fixme")
+                                        continue
 
-                                fValOut = min(1.0,max(0.0,((normalizeList[normalizeIndex + 1]) / 1000000.0)))
-                                if fValIn <= 0:
-                                    fValOut -= 1.0
-                                    
-                                bank.seek(-8,1)
-                                bank.write(struct.pack('<f',fValOut))
-                                bank.seek(4,1)
-
-                                theCounter += 1
+                                    fValOut = min(1.0,max(0.0,((normalizeList[normalizeIndex + 1]) / 1000000.0)))
+                                    if fValIn <= 0:
+                                        fValOut -= 1.0
+                                        
+                                    bank.seek(-8,1)
+                                    bank.write(struct.pack('<f',fValOut))
+                                    bank.seek(4,1)
+                                print("Normalized music volume to " + str(round(1 + fValOut, 6)) + "!")
+                            elif numAutos > 16:
+                                bank.seek(-4,1)
                             
         bank.seek(CurrOff + HIRCItemSize + 5)
         
