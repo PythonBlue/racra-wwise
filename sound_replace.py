@@ -200,10 +200,10 @@ def run(bank_name):
                         ulPluginIDIn = int.from_bytes(bank.read(4), "little")
                         ulPluginIDOut = int(re.findall('ulPluginID\\: 0x(\\d+)', trackData[j])[k])
                         if ulPluginIDIn != ulPluginIDOut:
-                            if ulPluginIDOut == 40001 or ulPluginIDOut == 130001:
+                            if ulPluginIDOut == 262145 or ulPluginIDOut == 1245185:
                                 bank.seek(-4,1)
                                 bank.write(ulPluginIDOut.to_bytes(4,"little"))
-                                if ulPluginIDOut == 40001:
+                                if ulPluginIDOut == 262145:
                                     print("Format changed to Vorbis!")
                                 else:
                                     print("Format changed to Opus!")
