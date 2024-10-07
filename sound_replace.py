@@ -214,11 +214,17 @@ def run(bank_name):
                                 bank.seek(-1,1)
                                 bank.write(StreamTypeOut.to_bytes(1,"little"))
                                 print("Sound now streamed!")
-                        bank.seek(9,1)
+                        IDCheck = int.from_bytes(bank.read(4),"little")
+                        sourceID = int(re.findall('sourceID\\: (\\d+)', trackData[j])[k])
+                        if IDCheck != sourceID:
+                            bank.seek(-4,1)
+                            bank.write(sourceID.to_bytes(4,"little"))
+                        bank.seek(5,1)
+                    playlistItems = int.from_bytes(bank.read(1), "little")
                     bank.seek(CurrOff + 22 + (14 * numSubTrack))
-                    print(numSubTrack)
-                    print(bank.tell())
-                    for k in range(numSubTrack):
+                    #print(playlistItems)
+                    #print(bank.tell())
+                    for k in range(playlistItems):
                         IDCheck = int.from_bytes(bank.read(4),"little")
                         if IDCheck == 0:
                             break
@@ -226,10 +232,6 @@ def run(bank_name):
                         if IDCheck != sourceID:
                             bank.seek(-4,1)
                             bank.write(sourceID.to_bytes(4,"little"))
-                            stamp = bank.tell()
-                            bank.seek(CurrOff + 19 + (14 * k))
-                            bank.write(sourceID.to_bytes(4,"little"))
-                            bank.seek(stamp)
                             print("Music " + str(IDCheck) + " replaced with " + str(sourceID) + "!")
                         bank.seek(4,1)
                         fPlayAt = float(re.findall('fPlayAt\\: ([-]?\\d+)', trackData[j])[k])
@@ -244,7 +246,7 @@ def run(bank_name):
                     numAutos = int.from_bytes(bank.read(4), "little")
                     if numAutos > 8:
                         continue
-                    if numAutos > 0: print(numAutos)
+                    #if numAutos > 0: print(numAutos)
                     for autoCount in range(numAutos):
                         autoClip = int.from_bytes(bank.read(4), "little")
                         bank.seek(4,1)
