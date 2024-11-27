@@ -17,6 +17,9 @@ def run(bank_name):
     sounds = []
     soundData = []
     soundList = []
+    MusicRanSeqs = []
+    MusicRanSeqData = []
+    MusicRanSeqList = []
     for file in sorted(os.listdir("txtp" + os.path.sep + bank_name)):
         if file.endswith(".txtp"):
             txtp = open("txtp" + os.path.sep + bank_name + os.path.sep + file, "r")
@@ -27,6 +30,10 @@ def run(bank_name):
             soundPrep = re.findall('CAkSound[\\[]\\d+[\\]]\\s+(\\d+)', txtpRead)
             for count in range(len(soundPrep)):
                 soundList.append(int(soundPrep[count]))
+
+            MusicRanSeqPrep = re.findall('CAkMusicRanSeqCntr[\\[]\\d+[\\]]\\s+(\\d+)', txtpRead)
+            for count in range(len(MusicRanSeqPrep)):
+                MusicRanSeqList.append(int(MusicRanSeqPrep[count]))
 
             segmentPrep = re.findall('CAkMusicSegment[\\[]\\d+[\\]]\\s+(\\d+)', txtpRead)
             for count in range(len(segmentPrep)):
@@ -78,7 +85,18 @@ def run(bank_name):
                     resultLength = resultLength.split('AkMusicRanSeqPlaylistItem')[0]
                 tracks.append(resultLength)
                 trackData.append(txtpRead[trackOff[count]:])
-                
+            
+            MusicRanSeqOff = []
+            MusicRanSeqFind = re.findall('CAkMusicRanSeqCntr[\\[]\\d+[\\]]\\s+(\\d+)', txtpRead)
+            if len(MusicRanSeqFind) > 0:
+                for count in range(len(MusicRanSeqFind)):
+                    MusicRanSeqOff.append(txtpRead.find(MusicRanSeqFind[count]))
+                for count in range(len(MusicRanSeqFind)):
+                    resultLength = txtpRead[MusicRanSeqOff[count]:]
+                    resultLength = resultLength.split(" ")[1]
+                    MusicRanSeqs.append(MusicRanSeqFind[count])
+                    MusicRanSeqData.append((txtpRead[MusicRanSeqOff[count]:].split("\n#\n#\n")[0]).split("CAk")[0].split("AkMusic")[0])
+            
     bank.seek(0)
     HIRCStart = 0
     while bank.tell() < bankSize - 32768:
@@ -93,8 +111,6 @@ def run(bank_name):
         CurrOff = bank.tell()
         HIRCItem = int.from_bytes(bank.read(1), "little")
         HIRCItemSize = int.from_bytes(bank.read(4), "little")
-        if HIRCItem != 10 and HIRCItem != 11 and HIRCItem != 2:
-            bank.seek(HIRCItemSize,1)
         if HIRCItem == 2:
             HIRCItemData = bank.read(HIRCItemSize)
             IDA = int.from_bytes(HIRCItemData[:4], "little")
@@ -128,7 +144,7 @@ def run(bank_name):
                         bank.write(soundSourceCheck)
                         print("Sound " + str(int.from_bytes(HIRCItemData[9:13], "little")) + " replaced with " + str(int.from_bytes(soundSourceCheck, "little")) + "!")
                     
-        if HIRCItem == 10:
+        elif HIRCItem == 10:
             HIRCItemData = bank.read(HIRCItemSize)
             IDA = int.from_bytes(HIRCItemData[:4], "little")
             #if IDA not in segmentList:
@@ -144,14 +160,20 @@ def run(bank_name):
                         volumeProp = 0
                         for iteration in range(propCheck):
                             propCheck2 = int.from_bytes(bank.read(1), "little")
-                            if propCheck2 == 1:
+                            if propCheck2 == 0:
                                 volumeProp = iteration
+                                bank.seek(CurrOff + 23 + propCheck)
+                                break
                         for iter2 in range(volumeProp):
                             bank.seek(4,1)
                         fVolumeFinds = re.findall('\\* \\[Volume\\]:\\s+([-]?\\d+[.]?\\d*)',segmentData[j])
                         if len(fVolumeFinds) > 0:
                             fVolume = float(fVolumeFinds[0])
-                            bank.write(struct.pack('<f', float(fVolume)))
+                            outputOff = struct.unpack('f',bank.read(4))
+                            if fVolume != outputOff:
+                                bank.seek(-4,1)
+                                bank.write(struct.pack('<f', float(fVolume)))
+                                print("Music Segment " + str(IDA) + " attenuated!")
                             
                     bank.seek(CurrOff + 5)
                     fTempo = 0
@@ -184,7 +206,7 @@ def run(bank_name):
                         bank.write(struct.pack('<d', float(fEndMark[1])))
                     else:
                         print("Address later!")
-        if HIRCItem == 11:
+        elif HIRCItem == 11:
             HIRCItemData = bank.read(HIRCItemSize)
             IDB = int.from_bytes(HIRCItemData[:4], "little")
             if IDB not in trackList:
@@ -222,8 +244,8 @@ def run(bank_name):
                         bank.seek(5,1)
                     playlistItems = int.from_bytes(bank.read(1), "little")
                     bank.seek(CurrOff + 22 + (14 * numSubTrack))
-                    #print(playlistItems)
-                    #print(bank.tell())
+                    print(playlistItems)
+                    print(bank.tell())
                     for k in range(playlistItems):
                         IDCheck = int.from_bytes(bank.read(4),"little")
                         if IDCheck == 0:
@@ -246,7 +268,7 @@ def run(bank_name):
                     numAutos = int.from_bytes(bank.read(4), "little")
                     if numAutos > 8:
                         continue
-                    #if numAutos > 0: print(numAutos)
+                    if numAutos > 0: print(numAutos)
                     for autoCount in range(numAutos):
                         autoClip = int.from_bytes(bank.read(4), "little")
                         bank.seek(4,1)
@@ -271,7 +293,38 @@ def run(bank_name):
                                     bank.write(struct.pack('<f',fValOut))
                                     bank.seek(4,1)
                                     print("Reset value of automation " + str(autoCount) + " + " + str(n) + " from " + str(fValIn) + " to " + str(fValOut))
-                            
+
+        elif HIRCItem == 13:
+            HIRCItemData = bank.read(HIRCItemSize)
+            IDC = int.from_bytes(HIRCItemData[:4], "little")
+            if IDC not in MusicRanSeqList:
+                bank.seek(CurrOff + HIRCItemSize + 5)
+                continue
+            fVolume = 0
+            bank.seek(CurrOff + 22)
+            j = MusicRanSeqList.index(IDC)
+            propCheck = int.from_bytes(bank.read(1), "little")
+            if propCheck > 0:
+                volumeProp = 0
+                for iteration in range(propCheck):
+                    propCheck2 = int.from_bytes(bank.read(1), "little")
+                    if propCheck2 == 0:
+                        volumeProp = iteration
+                        bank.seek(CurrOff + 23 + propCheck)
+                        break
+                for iter2 in range(volumeProp):
+                    bank.seek(4,1)
+                fVolumeFinds = re.findall('\\* \\[Volume\\]:\\s+([-]?\\d+[.]?\\d*)',MusicRanSeqData[j])
+                if len(fVolumeFinds) > 0:
+                    fVolume = float(fVolumeFinds[0])
+                    outputOff = struct.unpack('f',bank.read(4))
+                    if fVolume != outputOff:
+                        bank.seek(-4,1)
+                        bank.write(struct.pack('<f', float(fVolume)))
+                        print("Music Playlist " + str(IDC) + " attenuated!")
+            
+        else:
+            bank.seek(HIRCItemSize,1)                    
         bank.seek(CurrOff + HIRCItemSize + 5)
         
     bank.close()
