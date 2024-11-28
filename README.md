@@ -77,7 +77,7 @@ Finally, some audio is stored both in the wem archives and a small segment in th
 
 - python sound_replace.py (name of the bank to edit)
 
-Example: "python sound_replace.py music"
+- - Example: "python sound_replace.py music"
 
 5. Open Modding Tool and replace/add the new wem files, as well as the soundbanks containing anything edited with the txtp files.
 
