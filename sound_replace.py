@@ -99,7 +99,7 @@ def run(bank_name):
             
     bank.seek(0)
     HIRCStart = 0
-    while bank.tell() < bankSize - 32768:
+    while bank.tell() < bankSize - 256:
         bankStart = bank.tell()
         bankRead = bank.read(65536)
         if b'HIRC' in bankRead:
@@ -118,15 +118,24 @@ def run(bank_name):
                 soundCheck = int(sounds[j].split("\n")[0])
                 if soundCheck == IDA:
                     bank.seek(CurrOff + 9)
-                    formatCheck = int((soundData[j].split("ulPluginID: 0x")[1]).split(" ")[0]).to_bytes(4, "little")
+                    #formatCheck = int((soundData[j].split("ulPluginID: 0x")[1]).split(" ")[0]).to_bytes(4, "little")
+                    formatCheckPrep = (soundData[j].split("ulPluginID: 0x")[1]).split(" ")[0]
+                    formatCheck = int(formatCheckPrep[0]) << 28
+                    formatCheck += int(formatCheckPrep[1]) << 24
+                    formatCheck += int(formatCheckPrep[2]) << 20
+                    formatCheck += int(formatCheckPrep[3]) << 16
+                    formatCheck += int(formatCheckPrep[4]) << 12
+                    formatCheck += int(formatCheckPrep[5]) << 8
+                    formatCheck += int(formatCheckPrep[6]) << 4
+                    formatCheck += int(formatCheckPrep[7])
                     if formatCheck != int.from_bytes(HIRCItemData[4:8], "little"):
-                        if formatCheck == b'\x01\x00\x04\x00':
-                            bank.formatCheck(CurrOff + 9)
-                            bank.write(formatCheck)
+                        if formatCheck == 262145:
+                            bank.seek(CurrOff + 9)
+                            bank.write(b'\x01\x00\x04\x00')
                             print("Sound " + str(int.from_bytes(HIRCItemData[9:13], "little")) + " format now Vorbis!")
-                        elif formatCheck == b'\x01\x00\x13\x00':
-                            bank.formatCheck(CurrOff + 9)
-                            bank.write(formatCheck)
+                        elif formatCheck == 1245185:
+                            bank.seek(CurrOff + 9)
+                            bank.write(b'\x01\x00\x13\x00')
                             print("Sound " + str(int.from_bytes(HIRCItemData[9:13], "little")) + " format now Opus!")
                 
                     bank.seek(CurrOff + 13)
