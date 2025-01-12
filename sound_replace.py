@@ -194,8 +194,8 @@ def run(bank_name):
                         uTimeSigNumBeatsBar = int(re.findall('uTimeSigNumBeatsBar:\\s(\\d+)', segmentData[j])[0])
                         uTimeSigBeatValue = int(re.findall('uTimeSigBeatValue:\\s(\\d+)', segmentData[j])[0])
                         if uTimeSigBeatValue != 2 and uTimeSigBeatValue != 4 and uTimeSigBeatValue != 8 and uTimeSigBeatValue != 16:
-                            uTimeSigNumBeatsBar = 0
-                            uTimeSigBeatValue = 0
+                            uTimeSigNumBeatsBar = 4
+                            uTimeSigBeatValue = 4
                     fDuration = float(segmentData[j][segmentData[j].find('fDuration: ') + 11:].split('\n')[0])
                     fEndMark = re.findall('AkMusicMarkerWwise:\\s+(\\d+[.]?\\d*)',segmentData[j])
                     offFix = HIRCItemSize - 50
@@ -278,8 +278,14 @@ def run(bank_name):
                     if numAutos > 8:
                         continue
                     if numAutos > 0: print(numAutos)
+                    repeatAuto = -1
+                    autoClip = 0
                     for autoCount in range(numAutos):
-                        autoClip = int.from_bytes(bank.read(4), "little")
+                        repeatAuto += 1
+                        autoClipNew = int.from_bytes(bank.read(4), "little")
+                        if autoClip != autoClipNew:
+                            repeatAuto = 0
+                        autoClip = autoClipNew
                         bank.seek(4,1)
                         numAutoSteps = int.from_bytes(bank.read(4), "little")
                         for n in range(numAutoSteps):
@@ -287,21 +293,21 @@ def run(bank_name):
                             [fValIn] = struct.unpack('f',bank.read(4))
                             fCurveType = int.from_bytes(bank.read(4),"little")
 
-                            if ('Automation ' + str(autoCount) + ' Point ' + str(n) + ' Time') in trackData[j]:
-                                fTimeOut = float(re.findall('Automation ' + str(autoCount) + ' Point ' + str(n) + ' Time\\: ([-]?\\d+[.]?\\d*)', trackData[j])[autoClip])
+                            if ('Automation ' + str(autoClip) + ' Point ' + str(n) + ' Time') in trackData[j]:
+                                fTimeOut = float(re.findall('Automation ' + str(autoClip) + ' Point ' + str(n) + ' Time\\: ([-]?\\d+[.]?\\d*)', trackData[j])[repeatAuto])
                                 if fTimeIn != fTimeOut:
                                     bank.seek(-12,1)
                                     bank.write(struct.pack('<f',fTimeOut))
                                     bank.seek(8,1)
                                     print("Reset time of automation " + str(autoCount) + " + " + str(n) + " from " + str(fTimeIn) + " to " + str(fTimeOut))
 
-                            if ('Automation ' + str(autoCount) + ' Point ' + str(n) + ' Value') in trackData[j]:
-                                fValOut = float(re.findall('Automation ' + str(autoCount) + ' Point ' + str(n) + ' Value\\: ([-]?\\d+[.]?\\d*)', trackData[j])[autoClip])
+                            if ('Automation ' + str(autoClip) + ' Point ' + str(n) + ' Value') in trackData[j]:
+                                fValOut = float(re.findall('Automation ' + str(autoClip) + ' Point ' + str(n) + ' Value\\: ([-]?\\d+[.]?\\d*)', trackData[j])[repeatAuto])
                                 if fValIn != fValOut:
                                     bank.seek(-8,1)
                                     bank.write(struct.pack('<f',fValOut))
                                     bank.seek(4,1)
-                                    print("Reset value of automation " + str(autoCount) + " + " + str(n) + " from " + str(fValIn) + " to " + str(fValOut))
+                                    print("Reset value of automation " + str(autoClip) + " + " + str(n) + " from " + str(fValIn) + " to " + str(fValOut))
 
         elif HIRCItem == 13:
             HIRCItemData = bank.read(HIRCItemSize)
