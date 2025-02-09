@@ -36,7 +36,7 @@ for folder in sorted(os.listdir(bankPath + os.path.sep + "wwnames" + os.path.sep
         if folder.split(".txt")[0] == "init":
             continue
         if os.path.exists("wwiser.pyz") and os.path.exists("wwnames.db3"):
-            os.system('python3 wwiser.pyz -g -gu -go "' + bankPath + os.path.sep + 'txtp' + os.path.sep + folder.split(".")[0] + '" -gw "..' + os.path.sep + '..' + os.path.sep + 'wem" -gbo -nl "' + bankPath + os.path.sep + 'wwnames' + os.path.sep + folder + '" -l "' + bankPath + os.path.sep + folder.split(".")[0] + '.bnk" "' + bankPath + os.path.sep + 'init.bnk"')
+            os.system('python3 wwiser.pyz -g -gu -go "' + bankPath + os.path.sep + 'txtp' + os.path.sep + folder.split(".")[0] + '" -gd -gw "..' + os.path.sep + '..' + os.path.sep + 'wem" -gbo -nl "' + bankPath + os.path.sep + 'wwnames' + os.path.sep + folder + '" -l "' + bankPath + os.path.sep + folder.split(".")[0] + '.bnk" "' + bankPath + os.path.sep + 'init.bnk"')
         else:
             print("WWiser and/or wwnames.db3 not installed!")
             debug = True
@@ -44,4 +44,4 @@ for folder in sorted(os.listdir(bankPath + os.path.sep + "wwnames" + os.path.sep
 if debug == False:
     sort.sort(in_string, validType)
     toc.toc(in_string, validType)
-shutil.rmtree(bankPath + os.path.sep + "wem")
+shutil.rmtree(bankPath)
