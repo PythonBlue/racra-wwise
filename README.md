@@ -79,6 +79,11 @@ Finally, some audio is stored both in the wem archives and a small segment in th
 
 - - Example: "python sound_replace.py music"
 
+Alternatively, as of 4-6-2025, you can also replace music segments referenced by the gameplay without replacing the raw audio by running the "sound_replace" script with a ".lst" file in the music folder containing lines in the following format:
+
+- (Gamestate Name; can be obtained either in the txtp filenames or by looking through the MusicSwitchCntr information in them):(CAkMusicRanSeqCntr number (not the bracketed number)
+- - Example: "OBJ_ZORDOOM_EVAC_PLAT_01_COMBAT:854756349"
+
 5. Open Modding Tool and replace/add the new wem files, as well as the soundbanks containing anything edited with the txtp files.
 
 6. Build, install, and test

@@ -1,4 +1,17 @@
-import os, re, struct, shutil, sys
+import os, re, struct, shutil, sys, codecs
+
+def wwisefnv(buf: bytes) -> int:
+    h = 2166136261
+
+    for b in buf:
+        h *= 16777619
+        if b >= 65 and b <= 90:
+            b = b - 65 + 97
+        h ^= b
+
+    h = (h & 0xFFFFFFFF)
+
+    return h
 
 def run(bank_name):
     shutil.copy(bank_name + ".soundbank_vanilla", bank_name + ".soundbank")
@@ -20,7 +33,21 @@ def run(bank_name):
     MusicRanSeqs = []
     MusicRanSeqData = []
     MusicRanSeqList = []
+    GameSysSrc = []
+    GameSysDst = []
+    
     for file in sorted(os.listdir("txtp" + os.path.sep + bank_name)):
+        if file.endswith(".lst"):
+            lst = open("txtp" + os.path.sep + bank_name + os.path.sep + file, "r")
+            for line in lst.readlines():
+                if ":" in line:
+                    SrcValue = line.split(":")[0]
+                    SrV = wwisefnv(SrcValue.encode("utf-8"))
+                    #print("New hash: " + str(SrV))
+                    GameSysSrc.append(int(SrV).to_bytes(4, "little"))
+                    GameSysDst.append(int(line.split(":")[1]).to_bytes(4, "little"))
+            lst.close()
+
         if file.endswith(".txtp"):
             txtp = open("txtp" + os.path.sep + bank_name + os.path.sep + file, "r")
             txtpRead = txtp.read()
@@ -309,6 +336,15 @@ def run(bank_name):
                                     bank.seek(4,1)
                                     print("Reset value of automation " + str(autoClip) + " + " + str(n) + " from " + str(fValIn) + " to " + str(fValOut))
 
+        elif HIRCItem == 12:
+            HIRCItemData = bank.read(HIRCItemSize)
+            IDC = int.from_bytes(HIRCItemData[:4], "little")
+            for IDD in range(len(GameSysSrc)):
+                if GameSysSrc[IDD] in HIRCItemData:
+                    bank.seek(CurrOff + 5 + HIRCItemData.find(GameSysSrc[IDD]) + 4)
+                    bank.write(GameSysDst[IDD])
+                    
+            
         elif HIRCItem == 13:
             HIRCItemData = bank.read(HIRCItemSize)
             IDC = int.from_bytes(HIRCItemData[:4], "little")
