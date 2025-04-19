@@ -37,7 +37,7 @@ def run(bank_name):
     GameSysDst = []
     
     for file in sorted(os.listdir("txtp" + os.path.sep + bank_name)):
-        if file.endswith(".lst"):
+        if file.endswith(".txt"):
             lst = open("txtp" + os.path.sep + bank_name + os.path.sep + file, "r")
             for line in lst.readlines():
                 if ":" in line:
