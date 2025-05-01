@@ -167,7 +167,7 @@ def sort(in_string, validType):
                 if sbNamesinBank[j][i] in fileName:
                     fileName = sbNamesinBank[j][i]
                     #Dupes = False
-                print("Extracting " + fileName)
+                print("Extracting " + fileName2)
                 bankCheck = open(bankPath + os.path.sep + "txtp" + os.path.sep + sbNames[j] + os.path.sep + file, "r")
                 bankCheckRead = bankCheck.read()
                 bankEmbedSearch = re.search("wem/.+[.]bnk", bankCheckRead)

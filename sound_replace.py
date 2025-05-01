@@ -373,6 +373,51 @@ def run(bank_name):
                         bank.seek(-4,1)
                         bank.write(struct.pack('<f', float(fVolume)))
                         print("Music Playlist " + str(IDC) + " attenuated!")
+                
+                ranCheck = int(MusicRanSeqs[j].split("\n")[0]).to_bytes(4, "little")
+                timeFound = HIRCItemData.find(HIRCItemData.find(b'\x04\x04\x01'))
+                if timeFound == -1:
+                    timeFound = HIRCItemData.find(HIRCItemData.find(b'\x03\x04\x01'))
+                if timeFound == -1:
+                    timeFound = HIRCItemData.find(HIRCItemData.find(b'\x05\x04\x01'))
+                if timeFound == -1:
+                    timeFound = HIRCItemData.find(HIRCItemData.find(b'\x07\x04\x01'))
+                if timeFound == -1:
+                    timeFound = HIRCItemData.find(HIRCItemData.find(b'\x06\x08\x01'))
+                if timeFound == -1:
+                    timeFound = HIRCItemData.find(HIRCItemData.find(b'\x05\x08\x01'))
+                if timeFound == -1:
+                    timeFound = HIRCItemData.find(HIRCItemData.find(b'\x07\x08\x01'))
+                if timeFound == -1:
+                    timeFound = HIRCItemData.find(HIRCItemData.find(b'\x13\x16\x01'))
+                if ranCheck == HIRCItemData[:4] and timeFound > -1:
+                    print("Checking")
+                    bank.seek(CurrOff + 5 + timeFound - 20)
+                    if MusicRanSeqData[j].find('fGridPeriod: ') >= 0:
+                        fGridPeriod = float(MusicRanSeqData[j][MusicRanSeqData[j].find('fGridPeriod: ') + 13:].split('\n')[0])
+                        if fGridPeriod > 0:
+                            bank.write(struct.pack('<d', fGridPeriod))
+                    bank.seek(CurrOff + 5 + timeFound - 12)
+                    if MusicRanSeqData[j].find('fGridOffset: ') >= 0:
+                        fGridOffset = float(MusicRanSeqData[j][MusicRanSeqData[j].find('fGridOffset: ') + 13:].split('\n')[0])
+                        if fGridOffset != 0:
+                            bank.write(struct.pack('<d', fGridOffset))
+                    bank.seek(CurrOff + 5 + timeFound - 4)
+                    if MusicRanSeqData[j].find('fTempo: ') >= 0:
+                        fTempo = float(MusicRanSeqData[j][MusicRanSeqData[j].find('fTempo: ') + 8:].split('\n')[0])
+                        if fTempo > 0:
+                            bank.write(struct.pack('<f', fTempo))
+                            print("Playlist Tempo Changed!")
+                    bank.seek(CurrOff + 5 + timeFound)
+                    if MusicRanSeqData[j].find('uTimeSigNumBeatsBar: ') >= 0:
+                        uTimeSigNumBeatsBar = int(MusicRanSeqData[j][MusicRanSeqData[j].find('uTimeSigNumBeatsBar: ') + 21:].split('\n')[0])
+                        if fTempo > 0:
+                            bank.write(uTimeSigNumBeatsBar.to_bytes(1,"little"))
+                    if MusicRanSeqData[j].find('uTimeSigBeatValue: ') >= 0:
+                        uTimeSigBeatValue = int(MusicRanSeqData[j][MusicRanSeqData[j].find('uTimeSigBeatValue: ') + 19:].split('\n')[0])
+                        if fTempo > 0:
+                            bank.write(uTimeSigBeatValue.to_bytes(1,"little"))
+                
             
         else:
             bank.seek(HIRCItemSize,1)                    
