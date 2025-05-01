@@ -375,21 +375,21 @@ def run(bank_name):
                         print("Music Playlist " + str(IDC) + " attenuated!")
                 
                 ranCheck = int(MusicRanSeqs[j].split("\n")[0]).to_bytes(4, "little")
-                timeFound = HIRCItemData.find(HIRCItemData.find(b'\x04\x04\x01'))
+                timeFound = HIRCItemData.find(b'\x04\x04\x01')
                 if timeFound == -1:
-                    timeFound = HIRCItemData.find(HIRCItemData.find(b'\x03\x04\x01'))
+                    timeFound = HIRCItemData.find(b'\x03\x04\x01')
                 if timeFound == -1:
-                    timeFound = HIRCItemData.find(HIRCItemData.find(b'\x05\x04\x01'))
+                    timeFound = HIRCItemData.find(b'\x05\x04\x01')
                 if timeFound == -1:
-                    timeFound = HIRCItemData.find(HIRCItemData.find(b'\x07\x04\x01'))
+                    timeFound = HIRCItemData.find(b'\x07\x04\x01')
                 if timeFound == -1:
-                    timeFound = HIRCItemData.find(HIRCItemData.find(b'\x06\x08\x01'))
+                    timeFound = HIRCItemData.find(b'\x06\x08\x01')
                 if timeFound == -1:
-                    timeFound = HIRCItemData.find(HIRCItemData.find(b'\x05\x08\x01'))
+                    timeFound = HIRCItemData.find(b'\x05\x08\x01')
                 if timeFound == -1:
-                    timeFound = HIRCItemData.find(HIRCItemData.find(b'\x07\x08\x01'))
+                    timeFound = HIRCItemData.find(b'\x07\x08\x01')
                 if timeFound == -1:
-                    timeFound = HIRCItemData.find(HIRCItemData.find(b'\x13\x16\x01'))
+                    timeFound = HIRCItemData.find(b'\x13\x16\x01')
                 if ranCheck == HIRCItemData[:4] and timeFound > -1:
                     print("Checking")
                     bank.seek(CurrOff + 5 + timeFound - 20)
