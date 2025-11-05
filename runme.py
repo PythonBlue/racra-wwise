@@ -45,4 +45,3 @@ for folder in sorted(os.listdir(bankPath + os.path.sep + "wwnames" + os.path.sep
 if debug == False:
     sort.sort(in_string, validType)
     toc.toc(in_string, validType)
-shutil.rmtree(bankPath)
