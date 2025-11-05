@@ -358,7 +358,7 @@ def toc(in_string, validType):
                         os.system('..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream' + os.path.sep + 'vgmstream-cli.exe -D 2 -i -o "' + '..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + wavPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + IDCheck + '.wav" "' + fileProc + '" >> "..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream.log"')
                     else:
                         print("vgmstream-cli not installed!")
-                        return
+                        #return
                     os.chdir(".." + os.path.sep + ".." + os.path.sep + "..")
                     bankChecked.append(IDCheck)
                 for file2 in sorted(os.listdir(wavPath + os.path.sep + folder)):
