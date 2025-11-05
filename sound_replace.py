@@ -35,6 +35,7 @@ def run(bank_name):
     MusicRanSeqList = []
     GameSysSrc = []
     GameSysDst = []
+    GameSysDstOld = []
     
     for file in sorted(os.listdir("txtp" + os.path.sep + bank_name)):
         if file.endswith(".txt"):
@@ -45,6 +46,10 @@ def run(bank_name):
                     SrV = wwisefnv(SrcValue.encode("utf-8"))
                     #print("New hash: " + str(SrV))
                     GameSysSrc.append(int(SrV).to_bytes(4, "little"))
+                    if len(line.split(":")) > 2:
+                        GameSysDstOld.append(int(line.split(":")[2]).to_bytes(4, "little"))
+                    else:
+                        GameSysDstOld.append(b'\xFF')
                     GameSysDst.append(int(line.split(":")[1]).to_bytes(4, "little"))
             lst.close()
 
@@ -341,8 +346,15 @@ def run(bank_name):
             IDC = int.from_bytes(HIRCItemData[:4], "little")
             for IDD in range(len(GameSysSrc)):
                 if GameSysSrc[IDD] in HIRCItemData:
-                    bank.seek(CurrOff + 5 + HIRCItemData.find(GameSysSrc[IDD]) + 4)
-                    bank.write(GameSysDst[IDD])
+                    if GameSysDstOld[IDD] in HIRCItemData and GameSysDstOld[IDD] != b'\xFF':
+                        bank.seek(CurrOff + 5 + HIRCItemData.find(GameSysSrc[IDD]) + 4)
+                        print(GameSysSrc[IDD])
+                        print(GameSysDstOld[IDD])
+                        print("Check above!")
+                        bank.write(GameSysDst[IDD])
+                    elif GameSysDstOld[IDD] == b'\xFF':
+                        bank.seek(CurrOff + 5 + HIRCItemData.find(GameSysSrc[IDD]) + 4)
+                        bank.write(GameSysDst[IDD])
                     
             
         elif HIRCItem == 13:

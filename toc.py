@@ -12,14 +12,14 @@ def natural_sort(l):
 def toc(in_string, validType):
     bankPath = "banks"
     soundPath = "sound"
-    flacPath = "extracted"
+    wavPath = "wav"
     in_file_sb = open("tmp", "wb")
     if validType == True:
         in_file_sb.close()
         in_file_sb = open("soundbank." + in_string, "rb")
         bankPath = "banks_" + in_string
         soundPath = "sound_" + in_string
-        flacPath = "extracted_" + in_string
+        wavPath = "wav_" + in_string
     else:
         in_file_sb.close()
         in_file_sb = open("soundbank", "rb")
@@ -295,9 +295,6 @@ def toc(in_string, validType):
     if not os.path.exists(bankPath + os.path.sep + "wem"):
         os.makedirs(bankPath + os.path.sep + "wem")
 
-    if os.path.exists(flacPath):
-        shutil.rmtree(flacPath)
-
     for file in sorted(os.listdir(bankPath)):
         if not file.endswith(".bnk"):
             continue
@@ -306,8 +303,8 @@ def toc(in_string, validType):
     for folder in sorted(os.listdir(bankPath + os.path.sep + "txtp_sorted")):
         bankChecked = []
         if os.path.isdir(bankPath + os.path.sep + "txtp_sorted" + os.path.sep + folder):
-            if not os.path.exists(flacPath + os.path.sep + folder):
-                os.makedirs(flacPath + os.path.sep + folder)
+            if not os.path.exists(wavPath + os.path.sep + folder):
+                os.makedirs(wavPath + os.path.sep + folder)
             for file in sorted(os.listdir(bankPath + os.path.sep + "txtp_sorted" + os.path.sep + folder)):
                 fileBase = file.split(".")[0].split("~")[0]
                 print("Converting " + fileBase)
@@ -315,15 +312,15 @@ def toc(in_string, validType):
                 print(fileProc)
                 fileBaseProc = fileProc.split(".")[0]
                 
-                if not os.path.exists(flacPath + os.path.sep + folder + os.path.sep + fileBase):
-                    os.makedirs(flacPath + os.path.sep + folder + os.path.sep + fileBase)
+                if not os.path.exists(wavPath + os.path.sep + folder + os.path.sep + fileBase):
+                    os.makedirs(wavPath + os.path.sep + folder + os.path.sep + fileBase)
                 if not file.endswith(".txtp"):
                     continue
                 fileOpen = open(bankPath + os.path.sep + "txtp_sorted" + os.path.sep + folder + os.path.sep + file, "r")
                 fileRead = fileOpen.read()
                 fileOpen.close()
-                if re.findall('\d+[.]wem', fileRead) != None:
-                    bankDep = re.findall('\d+[.]wem', fileRead)
+                if re.findall('\\d+[.]wem', fileRead) != None:
+                    bankDep = re.findall('\\d+[.]wem', fileRead)
                     for item in range(len(bankDep)):
                         for fSelect in range(len(IDtables)):
                             if int(bankDep[item].split(".wem")[0]) in IDtables[fSelect]:
@@ -339,22 +336,34 @@ def toc(in_string, validType):
                                 wemIndex = fileIndex[fileID[fSelect][IDtables[fSelect].index(IDCheck)]].index(offCheck)
                                 if wemIndex in checked[fileID[fSelect][IDtables[fSelect].index(IDCheck)]]:
                                     continue
-                                sourceWem2 = "wem"
-                                if in_string == "":
-                                    sourceWem2 = sourceWem
-                                metaPath = flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + str(IDCheck) + '.txt'
-                                metaFile = open(metaPath, "w")
-                                metaFile.write('Replace this file name base with a custom Wwise "wem" file.')
-                                metaFile.close()
-                bankDep = re.findall('wem/.+\n[#][#]\d+', fileRead)
+                                os.chdir(bankPath + os.path.sep + "txtp_sorted" + os.path.sep + folder)
+                                if os.path.exists('/usr/local/bin/vgmstream-cli') or os.path.exists('/opt/homebrew/bin/vgmstream-cli'):
+                                    os.system('vgmstream-cli -D 2 -i -o "' + '..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + wavPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + str(IDCheck) + '.wav" "' + fileProc + '" >> "..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream.log"')
+                                elif os.path.exists('..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream' + os.path.sep + 'vgmstream-cli.exe'):
+                                    os.system('..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream' + os.path.sep + 'vgmstream-cli.exe -D 2 -i -o "' + '..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + wavPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + str(IDCheck) + '.wav" "' + fileProc + '" >> .."' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream.log"')
+                                else:
+                                    print("vgmstream-cli not installed!")
+                                    return
+                                os.chdir(".." + os.path.sep + ".." + os.path.sep + "..")
+                                checked[fileID[fSelect][IDtables[fSelect].index(IDCheck)]].append(wemIndex)
+                bankDep = re.findall('wem/.+\n[#][#](\\d+)', fileRead)
                 for item in range(len(bankDep)):
-                    if bankDep[item].split("\n##")[1] in bankChecked:
+                    IDCheck = bankDep[item]
+                    if IDCheck in bankChecked:
                         continue
-                    metaPath = flacPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + bankDep[item].split("\n##")[1] + '.txt'
-                    metaFile = open(metaPath, "w")
-                    metaFile.write('Replace this file name base with a custom Wwise "wem" file.')
-                    metaFile.close()
-                    bankChecked.append(bankDep[item].split("#s")[1])
+                    os.chdir(bankPath + os.path.sep + "txtp_sorted" + os.path.sep + folder)
+                    if os.path.exists('/usr/local/bin/vgmstream-cli') or os.path.exists('/opt/homebrew/bin/vgmstream-cli'):
+                        os.system('vgmstream-cli -D 2 -i -o "' + '..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + wavPath + os.path.sep + folder + os.path.sep + fileBaseProc  + os.path.sep + IDCheck + '.wav" "' + fileProc + '" >> "..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream.log"')
+                    elif os.path.exists('..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream' + os.path.sep + 'vgmstream-cli.exe'):
+                        os.system('..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream' + os.path.sep + 'vgmstream-cli.exe -D 2 -i -o "' + '..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + wavPath + os.path.sep + folder + os.path.sep + fileBaseProc + os.path.sep + IDCheck + '.wav" "' + fileProc + '" >> "..' + os.path.sep + '..' + os.path.sep + '..' + os.path.sep + 'vgmstream.log"')
+                    else:
+                        print("vgmstream-cli not installed!")
+                        return
+                    os.chdir(".." + os.path.sep + ".." + os.path.sep + "..")
+                    bankChecked.append(IDCheck)
+                for file2 in sorted(os.listdir(wavPath + os.path.sep + folder)):
+                    if os.path.isdir(wavPath + os.path.sep + folder + os.path.sep + file2) and len(os.listdir(wavPath + os.path.sep + folder + os.path.sep + file2)) == 0:
+                        shutil.rmtree(wavPath + os.path.sep + folder + os.path.sep + file2)
         else:
             print("Debug!")
     print("\nSuccess!")
