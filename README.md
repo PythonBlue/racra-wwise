@@ -40,7 +40,7 @@ The remaining languages may be added later.
 
 ## Sound Replacement
 
-The included "sound_replace" script also depends on modifying the txtp files generated using the extraction tools. To use, run the script from the commandline, with an argument specifying the basename of the soundbank, which should be extracted using the [Modding Tool hosted here]{https://github.com/Tkachov/Overstrike/tree/main/ModdingTool) and its extension renamed to "soundbank_vanilla".
+The included "sound_replace" script also depends on modifying the txtp files generated using the extraction tools. To use, run the script from the commandline, with an argument specifying the basename of the soundbank, which should be extracted using the [Modding Tool hosted here](https://github.com/Tkachov/Overstrike/tree/main/ModdingTool) and its extension renamed to "soundbank_vanilla".
 
 As of September 21 2024, a custom build of wwiser.pyz is included that includes additional parameters for txtp creation, to further simplify sound analysis and modding for the game.
 
